@@ -1,0 +1,38 @@
+# Configuración Render como código (opcional — Render también lee envvars del dashboard).
+# Útil si querés re-crear el servicio desde cero o moverlo a otro workspace.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: erp-web-backend
+    runtime: python
+    plan: free                    # cambiar a 'starter' ($7/mes) para evitar cold start
+    region: oregon                # us-west; opciones: oregon, ohio, frankfurt, singapore
+    branch: main                  # se cambia a develop con la API si querés deploy continuo
+    rootDir: .
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true              # auto-deploy en cada push a main
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      # Las claves se setean por API/dashboard, NO en este archivo público:
+      # DATABASE_URL, SUPABASE_URL, SUPABASE_KEY, JWT_SECRET_KEY,
+      # GEMINI_API_KEY, RESEND_API_KEY, EMAIL_FROM, APP_URL, CORS_ORIGINS
+
+
+  - type: cron
+    name: limpiar-ips-90d
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: .
+    schedule: "0 3 * * *"
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: python scripts/limpiar_ips_viejas.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      # DATABASE_URL se setea desde el dashboard/API de Render.

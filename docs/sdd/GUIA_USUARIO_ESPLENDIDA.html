@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de uso — ERP Esplendida PY</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --primary: #6366f1;
+    --primary-dark: #4338ca;
+    --accent: #ec4899;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    padding: 20px 32px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(99,102,241,.2);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .topbar p { font-size: 13px; opacity: .85; }
+
+  /* ── Layout ── */
+  .layout { display: flex; max-width: 1280px; margin: 0 auto; }
+  nav.sidebar {
+    width: 240px;
+    min-width: 240px;
+    padding: 28px 0;
+    position: sticky;
+    top: 88px;
+    height: calc(100vh - 88px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+  }
+  nav ul { list-style: none; }
+  nav .section {
+    padding: 12px 24px 4px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+  nav a {
+    display: block;
+    padding: 6px 24px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13.5px;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  nav a:hover { background: var(--surface2); border-left-color: var(--primary); }
+
+  main {
+    flex: 1;
+    padding: 36px 40px 80px;
+    max-width: 880px;
+  }
+
+  /* ── Sections ── */
+  section { margin-bottom: 56px; scroll-margin-top: 100px; }
+  section h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section h2 .num {
+    background: var(--primary);
+    color: white;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  section > p.intro {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 28px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  h4 { font-size: 14px; font-weight: 700; color: var(--text); margin: 18px 0 8px; }
+  p { margin-bottom: 14px; }
+
+  /* ── Callout ── */
+  .callout {
+    background: rgba(99,102,241,.07);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .callout.warning { background: rgba(245,158,11,.08); border-left-color: var(--yellow); }
+  .callout.danger  { background: rgba(239,68,68,.07);  border-left-color: var(--red); }
+  .callout.success { background: rgba(16,185,129,.07); border-left-color: var(--green); }
+  .callout.tip     { background: rgba(236,72,153,.06); border-left-color: var(--accent); }
+  .callout strong { font-weight: 700; }
+
+  /* ── Steps ── */
+  ol.steps { padding-left: 0; counter-reset: step; list-style: none; margin-bottom: 18px; }
+  ol.steps > li {
+    position: relative;
+    padding: 12px 16px 12px 56px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    counter-increment: step;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 14px; top: 12px;
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+  }
+  ol.steps > li strong { font-weight: 700; color: var(--text); display: block; margin-bottom: 2px; }
+  ol.steps > li span.note { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; }
+
+  /* ── Tags ── */
+  .role-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 5px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .role-admin { background: #fee2e2; color: #991b1b; }
+  .role-operador { background: #fef3c7; color: #92400e; }
+  .role-viewer { background: #d1fae5; color: #065f46; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 18px;
+    font-size: 13.5px;
+  }
+  thead tr { background: var(--surface2); }
+  th { padding: 10px 14px; text-align: left; font-weight: 700; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Cards ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .feature-card .icon { font-size: 26px; margin-bottom: 6px; }
+  .feature-card h5 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .feature-card p { font-size: 12.5px; color: var(--muted); margin-bottom: 0; }
+
+  /* ── Path / UI navigation hint ── */
+  .ui-path {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .ui-path code { background: transparent; padding: 0; }
+  kbd {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 11px;
+  }
+  code {
+    background: var(--surface2);
+    color: var(--primary-dark);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 12.5px;
+  }
+
+  /* ── FAQ ── */
+  .faq details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .faq summary {
+    padding: 12px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    user-select: none;
+  }
+  .faq summary:hover { background: var(--surface2); }
+  .faq details[open] summary { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .faq details > div { padding: 14px 18px; font-size: 14px; color: var(--muted); }
+  .faq details > div p { margin-bottom: 8px; }
+
+  /* ── Quick reference banner ── */
+  .quick-ref {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    color: white;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+  .quick-ref h3 { color: white; margin-top: 0; }
+  .quick-ref p { color: rgba(255,255,255,.85); margin-bottom: 12px; }
+  .quick-ref .urls { display: flex; flex-wrap: wrap; gap: 10px; }
+  .quick-ref .urls a {
+    background: rgba(255,255,255,.12);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+  }
+  .quick-ref .urls a:hover { background: rgba(255,255,255,.2); }
+
+  /* ── Workflow diagram ── */
+  .workflow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .workflow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .workflow-step {
+    background: var(--surface2);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+  }
+  .workflow-arrow { color: var(--primary); font-size: 18px; }
+
+  @media (max-width: 900px) {
+    nav.sidebar { display: none; }
+    main { padding: 24px 18px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>📖 Guía de uso — ERP Esplendida PY</h1>
+  <p>Manual completo para administradores y operadores del Laboratorio Esplendida</p>
+</div>
+
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <nav class="sidebar">
+    <div class="section">Empezar</div>
+    <a href="#bienvenida">Bienvenida</a>
+    <a href="#primer-ingreso">Primer ingreso</a>
+    <a href="#navegacion">Cómo navegar</a>
+
+    <div class="section">Tareas frecuentes</div>
+    <a href="#cargar-factura">Cargar una factura</a>
+    <a href="#registrar-cobro">Registrar un cobro</a>
+    <a href="#registrar-pago">Registrar un pago</a>
+    <a href="#nuevo-cliente">Crear cliente / proveedor</a>
+    <a href="#inventario-uso">Inventario</a>
+
+    <div class="section">Pantallas</div>
+    <a href="#inicio">Inicio (dashboard)</a>
+    <a href="#timeline-uso">Timeline</a>
+    <a href="#clientes-uso">Clientes / Proveedores</a>
+    <a href="#facturas-uso">Facturas</a>
+    <a href="#cobros-pagos">Cobros y pagos</a>
+    <a href="#iva-uso">Resumen IVA</a>
+
+    <div class="section">Conceptos</div>
+    <a href="#conceptos">Facturado vs cobrado</a>
+    <a href="#estados">Estados de factura</a>
+    <a href="#permisos">Roles y permisos</a>
+
+    <div class="section">Otros</div>
+    <a href="#atajos">Atajos y tips</a>
+    <a href="#faq">Preguntas frecuentes</a>
+    <a href="#problemas">Si algo falla</a>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main>
+
+    <!-- ══ Bienvenida ══ -->
+    <section id="bienvenida">
+      <h2><span class="num">1</span> Bienvenida</h2>
+      <p class="intro">El ERP de Esplendida es el sistema interno para gestionar las operaciones del laboratorio: registrar facturas de venta y compra, controlar stock de insumos y productos terminados, llevar cuentas corrientes de clientes y proveedores, y revisar el flujo financiero.</p>
+
+      <div class="callout">
+        <strong>Para qué sirve este sistema:</strong> reemplaza planillas Excel y el viejo programa desktop. Todo lo que antes anotabas a mano o en un cuaderno ahora vive acá, accesible desde cualquier dispositivo con internet.
+      </div>
+
+      <div class="quick-ref">
+        <h3>🚀 Inicio rápido</h3>
+        <p>Lo más usado, a un click:</p>
+        <div class="urls">
+          <a href="#cargar-factura">📸 Cargar factura</a>
+          <a href="#registrar-cobro">💰 Registrar cobro</a>
+          <a href="#inventario-uso">📦 Ver stock</a>
+          <a href="#iva-uso">📊 IVA del mes</a>
+        </div>
+      </div>
+
+      <h3>¿Qué vas a poder hacer?</h3>
+      <div class="grid-3">
+        <div class="feature-card"><div class="icon">🧾</div><h5>Facturas</h5><p>Cargar facturas de venta y compra, manualmente o sacando una foto.</p></div>
+        <div class="feature-card"><div class="icon">💰</div><h5>Cobros y pagos</h5><p>Registrar pagos parciales o totales, ver quién debe qué.</p></div>
+        <div class="feature-card"><div class="icon">📦</div><h5>Inventario</h5><p>Stock de bronceadores, cremas, frascos, tapas y materias primas.</p></div>
+        <div class="feature-card"><div class="icon">👥</div><h5>Clientes</h5><p>Datos, cuenta corriente y mapa de ubicación.</p></div>
+        <div class="feature-card"><div class="icon">📊</div><h5>Reportes</h5><p>IVA mensual, flujo de caja, exportar a Excel.</p></div>
+        <div class="feature-card"><div class="icon">🤖</div><h5>Asistente IA</h5><p>Preguntar al chatbot en lenguaje natural.</p></div>
+      </div>
+    </section>
+
+
+    <!-- ══ Primer ingreso ══ -->
+    <section id="primer-ingreso">
+      <h2><span class="num">2</span> Primer ingreso</h2>
+
+      <ol class="steps">
+        <li>
+          <strong>Abrí la URL del sistema</strong>
+          <span class="note">En la nube: la URL que te pasó administración. En local: <code>http://localhost:3000</code></span>
+        </li>
+        <li>
+          <strong>Ingresá tu usuario y contraseña</strong>
+          <span class="note">El email que te dieron al darte de alta. Si no la recordás, hacé click en "¿Olvidaste tu contraseña?"</span>
+        </li>
+        <li>
+          <strong>Vas a entrar al <em>Inicio</em></strong>
+          <span class="note">Ahí ves un resumen del día: lo que te deben, lo que debés, las facturas vencidas, y un gráfico de los últimos meses.</span>
+        </li>
+      </ol>
+
+      <div class="callout warning">
+        <strong>⚠ Importante sobre la sesión:</strong> Si no usás el sistema durante <strong>30 minutos</strong>, te va a cerrar la sesión por seguridad. Te va a avisar 60 segundos antes con una alerta. Si moviste el mouse o tipeaste algo, el temporizador se reinicia.
+      </div>
+    </section>
+
+
+    <!-- ══ Navegación ══ -->
+    <section id="navegacion">
+      <h2><span class="num">3</span> Cómo navegar</h2>
+
+      <p class="intro">El sistema usa un menú lateral oscuro a la izquierda con todas las opciones agrupadas por área. En celular, el menú se mueve a la parte de abajo de la pantalla.</p>
+
+      <h3>📐 Las 5 áreas del menú</h3>
+      <table>
+        <thead><tr><th>Área</th><th>Qué incluye</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Vista general</strong></td><td>Inicio (dashboard), Timeline (historia mes a mes), Asistente IA</td></tr>
+          <tr><td><strong>Ventas</strong></td><td>Facturas de venta, Cobros, Clientes</td></tr>
+          <tr><td><strong>Compras</strong></td><td>Facturas de compra, Foto OCR, Pagos, Proveedores</td></tr>
+          <tr><td><strong>Stock</strong></td><td>Inventario de insumos y productos terminados</td></tr>
+          <tr><td><strong>Finanzas</strong></td><td>Cuentas bancarias, Resumen IVA</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        💡 <strong>Tip:</strong> Si necesitás más espacio en pantalla, hacé click en la flechita ⟨ que aparece a la derecha del menú lateral. Lo achica y deja solo los íconos.
+      </div>
+
+      <h3>🍞 Las "migas de pan"</h3>
+      <p>Arriba de cada pantalla vas a ver algo como <span class="ui-path">Inicio › Clientes › Detalle</span>. Eso te dice dónde estás y te permite volver a cualquier paso anterior con un click.</p>
+    </section>
+
+
+    <!-- ══ Cargar factura ══ -->
+    <section id="cargar-factura">
+      <h2><span class="num">4</span> Cargar una factura</h2>
+      <p class="intro">Hay <strong>3 maneras</strong> de cargar una factura. Elegí la que más se adapte al momento.</p>
+
+      <h3>📸 Opción A: Por foto (recomendada para facturas de compra)</h3>
+      <ol class="steps">
+        <li><strong>Andá a <span class="ui-path">Compras › Foto OCR</span></strong></li>
+        <li><strong>Sacá una foto o subí el PDF de la factura</strong><span class="note">El sistema usa Gemini (IA de Google) para leer los datos automáticamente.</span></li>
+        <li><strong>Revisá los datos extraídos</strong><span class="note">El número de factura, la fecha, el proveedor, los items y montos vienen pre-llenados. Si algo está mal, lo corregís.</span></li>
+        <li><strong>Click en "Guardar"</strong><span class="note">Quedó cargada como "Confirmada" si todo está bien, o como "Pendiente revisión" si la IA tuvo dudas.</span></li>
+      </ol>
+
+      <div class="callout success">
+        <strong>✓ Cuándo conviene:</strong> Factura de proveedor que te llega en papel o PDF. Te ahorra ~3 minutos por factura comparado con la carga manual.
+      </div>
+
+      <h3>✍️ Opción B: Carga manual (para ventas o cuando la foto sale mal)</h3>
+      <ol class="steps">
+        <li><strong>Andá a <span class="ui-path">Ventas › Facturas de venta</span> o <span class="ui-path">Compras › Facturas de compra</span></strong></li>
+        <li><strong>Click en "+ Nueva factura"</strong><span class="note">Botón azul arriba a la derecha.</span></li>
+        <li><strong>Completá los datos</strong>
+          <span class="note">Tipo (Factura/Nota Crédito/etc.), número, fecha, cliente o proveedor.</span>
+        </li>
+        <li><strong>Agregá los items uno por uno</strong>
+          <span class="note">Descripción, cantidad, precio unitario (<strong>sin IVA</strong>), porcentaje de IVA (10% para cosméticos, 5% para canasta familiar/medicamentos, 0% para exentas).</span>
+        </li>
+        <li><strong>Verificá el total</strong><span class="note">El sistema calcula automáticamente subtotal + IVA = total.</span></li>
+        <li><strong>Click en "Guardar"</strong></li>
+      </ol>
+
+      <div class="callout warning">
+        <strong>⚠ Sobre el precio:</strong> Siempre se carga el precio <strong>NETO (sin IVA)</strong>. El sistema le suma el IVA automáticamente.
+      </div>
+
+      <h3>📊 Opción C: Importación masiva desde Excel</h3>
+      <p>Si tenés muchas facturas históricas para cargar, podemos prepararte una plantilla Excel y subirlas todas juntas. <em>Esta opción está disponible en el menú de administración.</em></p>
+    </section>
+
+
+    <!-- ══ Registrar cobro ══ -->
+    <section id="registrar-cobro">
+      <h2><span class="num">5</span> Registrar un cobro</h2>
+      <p class="intro">Cuando un cliente te paga (total o parcialmente) una factura, lo registrás acá.</p>
+
+      <ol class="steps">
+        <li><strong>Andá a <span class="ui-path">Ventas › Cobros</span></strong><span class="note">O usá el botón rápido del Inicio.</span></li>
+        <li><strong>Click en "+ Nuevo cobro"</strong></li>
+        <li><strong>Buscá la factura</strong><span class="note">Aparece un buscador inteligente. Podés filtrar por cliente o por número de factura.</span></li>
+        <li><strong>Ingresá el monto cobrado</strong>
+          <span class="note">Si es un pago parcial, el sistema actualiza el saldo pendiente automáticamente. Si es el total, la factura pasa a "Pagada".</span>
+        </li>
+        <li><strong>Elegí el medio de pago</strong><span class="note">Efectivo, transferencia, cheque, tarjeta u otro.</span></li>
+        <li><strong>Si fue transferencia o cheque, vinculá la cuenta bancaria</strong></li>
+        <li><strong>Confirmá</strong></li>
+      </ol>
+
+      <div class="callout success">
+        <strong>Después del cobro:</strong> El saldo del cliente se actualiza en tiempo real. Si vas a Clientes lo vas a ver reflejado al instante.
+      </div>
+
+      <h3>🔁 Si te equivocaste — Deshacer</h3>
+      <p>Después de guardar un cobro, aparece un cartel arriba con un botón <strong>"Deshacer"</strong> que dura 5 segundos. Si te equivocaste con el monto, hacé click ahí y se cancela el cobro sin dejar rastro.</p>
+    </section>
+
+
+    <!-- ══ Registrar pago ══ -->
+    <section id="registrar-pago">
+      <h2><span class="num">6</span> Registrar un pago</h2>
+      <p class="intro">Cuando vos le pagás a un proveedor por una factura de compra (insumos, materias primas, servicios).</p>
+
+      <ol class="steps">
+        <li><strong>Andá a <span class="ui-path">Compras › Pagos</span></strong></li>
+        <li><strong>Click en "+ Nuevo pago"</strong></li>
+        <li><strong>Buscá la factura de compra</strong></li>
+        <li><strong>Ingresá el monto pagado</strong><span class="note">Igual que con los cobros, puede ser parcial o total.</span></li>
+        <li><strong>Elegí cómo pagaste</strong></li>
+        <li><strong>Confirmá</strong></li>
+      </ol>
+
+      <div class="callout tip">
+        💡 <strong>Tip:</strong> Si pagás varias facturas del mismo proveedor con una sola transferencia, podés registrar cada una por separado y el sistema lleva la cuenta. Idealmente con la misma fecha para que coincida con el extracto bancario.
+      </div>
+    </section>
+
+
+    <!-- ══ Nuevo cliente / proveedor ══ -->
+    <section id="nuevo-cliente">
+      <h2><span class="num">7</span> Crear un cliente o proveedor</h2>
+
+      <ol class="steps">
+        <li><strong>Andá a <span class="ui-path">Ventas › Clientes</span> o <span class="ui-path">Compras › Proveedores</span></strong></li>
+        <li><strong>Click en "+ Nuevo cliente / proveedor"</strong></li>
+        <li><strong>Completá los datos mínimos:</strong>
+          <span class="note">Nombre o razón social (obligatorio), RUC, teléfono, dirección/ciudad.</span>
+        </li>
+        <li><strong>💡 Pro tip:</strong> incluí la <strong>ciudad</strong> en la dirección
+          <span class="note">Ejemplo: "Av. Mcal López, Asunción". Así el cliente aparece en el mapa de Paraguay. Si solo ponés la dirección sin ciudad, no podrás verlo en el mapa.</span>
+        </li>
+      </ol>
+
+      <h3>🗺️ Sobre el mapa</h3>
+      <p>En la pantalla de Clientes hay un mapa de Paraguay a la derecha donde aparecen marcadores de las ciudades de cada cliente. El sistema detecta la ciudad automáticamente desde la dirección o el nombre.</p>
+
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>🟢 Verde:</strong> cliente al día (saldo bajo o cero)</li>
+        <li><strong>🟡 Amarillo:</strong> cliente con saldo medio</li>
+        <li><strong>🔴 Rojo:</strong> cliente con saldo alto</li>
+      </ul>
+
+      <p>Si hacés click en un marcador, la lista se filtra para mostrar solo los clientes de esa ciudad.</p>
+
+      <div class="callout warning">
+        <strong>⚠ Si veo "— Sin RUC, Sin Teléfono":</strong> significa que el cliente fue creado sin esos datos (probablemente migrado del sistema viejo). Hacé click sobre él y completá los datos faltantes.
+      </div>
+    </section>
+
+
+    <!-- ══ Inventario ══ -->
+    <section id="inventario-uso">
+      <h2><span class="num">8</span> Inventario</h2>
+      <p class="intro">Acá vive el stock de Esplendida: bronceadores y cremas (productos terminados) e insumos (frascos, tapas, etiquetas, materias primas).</p>
+
+      <h3>🎨 Categorías visuales</h3>
+      <p>Cada item se muestra como una tarjeta con ícono y color según su categoría:</p>
+      <div class="grid-3">
+        <div class="feature-card" style="border-left: 3px solid #fbbf24;"><div class="icon">🧴</div><h5>Bronceadores</h5><p>Producto estrella</p></div>
+        <div class="feature-card" style="border-left: 3px solid #ec4899;"><div class="icon">🫧</div><h5>Cremas</h5><p>Línea facial/corporal</p></div>
+        <div class="feature-card" style="border-left: 3px solid #3b82f6;"><div class="icon">🍶</div><h5>Frascos</h5><p>Envases</p></div>
+        <div class="feature-card" style="border-left: 3px solid #8b5cf6;"><div class="icon">🔒</div><h5>Tapas</h5><p>Atomizadores y disc-top</p></div>
+        <div class="feature-card" style="border-left: 3px solid #10b981;"><div class="icon">🏷️</div><h5>Etiquetas</h5><p>Frente y dorso</p></div>
+        <div class="feature-card" style="border-left: 3px solid #fb923c;"><div class="icon">🌿</div><h5>Materia prima</h5><p>Extractos, aceites</p></div>
+      </div>
+
+      <h3>🚦 Semáforo de stock</h3>
+      <p>Debajo de cada tarjeta hay una barra de color que te dice qué tan al día está el stock:</p>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>Verde:</strong> stock saludable (más de 2× el punto de reorden)</li>
+        <li><strong>Amarillo:</strong> atención (entre 1× y 2× el punto de reorden)</li>
+        <li><strong>Rojo:</strong> ¡crítico! Pedir ya</li>
+        <li><strong>Gris:</strong> sin punto de reorden configurado (no avisa)</li>
+      </ul>
+
+      <h3>➕ Agregar un nuevo item</h3>
+      <ol class="steps">
+        <li><strong>Click en "+ Nuevo item"</strong></li>
+        <li><strong>Completá descripción, código, unidad de medida</strong>
+          <span class="note">La unidad puede ser: unidad, kg, lt, m², m³, caja, bolsa, otro.</span>
+        </li>
+        <li><strong>Cargá el stock actual y el costo unitario</strong></li>
+        <li><strong>Definí el "punto de reorden"</strong>
+          <span class="note">Es la cantidad mínima a partir de la cual querés que el sistema te avise. Por ejemplo, 500 frascos. Si lo dejás en 0, no avisa nunca.</span>
+        </li>
+      </ol>
+
+      <div class="callout danger">
+        <strong>⚠ ¡Recordatorio importante!</strong> Si ves todos tus productos con "OK" en verde y stock crítico de varios items, probablemente sea porque <strong>el punto de reorden está en 0</strong> y nunca se configuró. Pasá por cada producto y completá ese campo.
+      </div>
+    </section>
+
+
+    <!-- ══ Inicio ══ -->
+    <section id="inicio">
+      <h2><span class="num">9</span> Pantalla: Inicio (Dashboard)</h2>
+      <p class="intro">Lo primero que ves al entrar. Resumen del día en 5 secciones:</p>
+
+      <h3>1️⃣ Resumen inteligente</h3>
+      <p>Card violeta-rosado arriba. <strong>Cuenta la historia del día en lenguaje natural:</strong> cuánto más o menos cobraste vs el mes pasado, si hay facturas que vencen mañana, cuál es tu cliente con mayor saldo, si tenés stock crítico, cuánto IVA vas a pagar.</p>
+
+      <h3>2️⃣ Cards principales (Por cobrar / Por pagar / Ingresos cobrados)</h3>
+      <table>
+        <thead><tr><th>Card</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td>🔵 <strong>Por cobrar</strong></td><td>Total que tus clientes te deben (todas las facturas no pagadas, todo el tiempo)</td></tr>
+          <tr><td>🌸 <strong>Por pagar</strong></td><td>Total que debés a proveedores</td></tr>
+          <tr><td>🟢 <strong>Ingresos cobrados</strong></td><td>Plata que entró este mes (solo cobros, no facturado)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3️⃣ Gráfico "Ingresos y egresos"</h3>
+      <p>Barras dobles por mes: <span style="color:#10b981;font-weight:600">verde = ventas facturadas</span>, <span style="color:#ef4444;font-weight:600">rojo = compras facturadas</span>.</p>
+      <div class="callout tip">
+        💡 <strong>Filtro de período:</strong> arriba del gráfico tenés pestañas para cambiar el rango:<br>
+        <kbd>Mes</kbd> <kbd>Trim.</kbd> <kbd>Sem.</kbd> <kbd>6M</kbd> <kbd>12M</kbd> <kbd>Año</kbd> <kbd>Todo</kbd> <kbd>▾</kbd><br>
+        El último botón ▾ abre opciones avanzadas: mes pasado, año pasado, o un rango personalizado con fechas.
+      </div>
+
+      <h3>4️⃣ Listas inferiores</h3>
+      <p>Las últimas facturas registradas y los top 5 clientes/proveedores con saldo.</p>
+
+      <h3>5️⃣ Acciones rápidas</h3>
+      <p>Botones grandes para las operaciones más usadas: cargar factura, registrar cobro/pago, ver clientes, etc. Solo aparecen si tu rol tiene permiso de escritura.</p>
+    </section>
+
+
+    <!-- ══ Timeline ══ -->
+    <section id="timeline-uso">
+      <h2><span class="num">10</span> Pantalla: Timeline</h2>
+      <p class="intro">Vista cronológica de toda la actividad, agrupada por mes. Útil para entender qué pasó en cualquier período.</p>
+
+      <h3>Lo que ves</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>Stats globales arriba:</strong> total ventas, total compras y neto del período</li>
+        <li><strong>Bloque por mes:</strong> emoji estacional, mes/año, stats del mes (ventas/compras/neto)</li>
+        <li><strong>Lista de operaciones:</strong> cada factura con su fecha, tipo (venta/compra), contraparte y monto</li>
+      </ul>
+
+      <h3>Filtros disponibles</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>Período:</strong> mismas pestañas que el dashboard</li>
+        <li><strong>Tipo:</strong> Todo / Solo ventas / Solo compras</li>
+      </ul>
+
+      <div class="callout">
+        💼 <strong>Caso de uso típico:</strong> Te llama tu contador y te pregunta "¿qué pasó en marzo?". Vas al Timeline, filtrás por "Año", buscás marzo y le mostrás todo en una sola vista.
+      </div>
+    </section>
+
+
+    <!-- ══ Clientes ══ -->
+    <section id="clientes-uso">
+      <h2><span class="num">11</span> Pantalla: Clientes / Proveedores</h2>
+      <p class="intro">Misma estructura para ambas pantallas.</p>
+
+      <h3>Lo que ves</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>KPIs arriba:</strong> total registrados, al día, con saldo, con saldo alto</li>
+        <li><strong>Buscador</strong> por nombre o RUC</li>
+        <li><strong>Toggle Tarjetas / Tabla:</strong> para elegir cómo ver la información</li>
+        <li><strong>Lista de clientes</strong> con avatar de iniciales, datos de contacto, saldo y semáforo</li>
+        <li><strong>Mapa de Paraguay</strong> a la derecha (solo en desktop) con todos los clientes ubicados</li>
+      </ul>
+
+      <h3>El avatar con iniciales</h3>
+      <p>Cada cliente tiene un cuadrado de color con sus iniciales. El color se genera automáticamente a partir del nombre — siempre el mismo cliente tendrá el mismo color, lo que ayuda a reconocerlo de un vistazo.</p>
+
+      <h3>El semáforo de salud</h3>
+      <p>Debajo del nombre hay un puntito de color:</p>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>Verde "Al día":</strong> sin deuda o saldo bajo (menos de 1M)</li>
+        <li><strong>Amarillo "Atención":</strong> entre 1M y 10M de saldo</li>
+        <li><strong>Rojo "Saldo alto":</strong> más de 10M de saldo</li>
+      </ul>
+    </section>
+
+
+    <!-- ══ Facturas ══ -->
+    <section id="facturas-uso">
+      <h2><span class="num">12</span> Pantalla: Facturas</h2>
+      <p class="intro">Lista completa de comprobantes (ventas y compras) con búsqueda y filtros.</p>
+
+      <h3>Cómo buscar</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>Por contraparte:</strong> escribir nombre del cliente/proveedor</li>
+        <li><strong>Por número:</strong> 001-001-0123456</li>
+        <li><strong>Por estado de pago:</strong> Pagada / Pago parcial / No pagada / Vencida</li>
+        <li><strong>Por tipo:</strong> Venta / Compra / Nota de crédito / etc.</li>
+        <li><strong>Por fecha:</strong> rango personalizado</li>
+      </ul>
+
+      <h3>Ver el detalle de una factura</h3>
+      <p>Click en cualquier fila → se abre el detalle con los items línea por línea, los pagos registrados y los adjuntos (PDF o foto original).</p>
+
+      <h3>Anular una factura</h3>
+      <p>Si una factura se cargó por error, podés <strong>anularla</strong> (no borrarla). Quedan registradas como "anuladas" con motivo y fecha, y revierten el impacto en saldos.</p>
+
+      <div class="callout warning">
+        <strong>⚠ No se pueden borrar facturas.</strong> Solo anular. Es por trazabilidad fiscal — el log de auditoría guarda quién, cuándo y por qué se anuló.
+      </div>
+    </section>
+
+
+    <!-- ══ Cobros y pagos ══ -->
+    <section id="cobros-pagos">
+      <h2><span class="num">13</span> Pantalla: Cobros y pagos</h2>
+      <p class="intro">Lista de todos los movimientos de plata (cobros entrantes y pagos salientes).</p>
+
+      <h3>Diferencia entre "Factura" y "Cobro/Pago"</h3>
+      <table>
+        <thead><tr><th>Factura</th><th>Cobro o pago</th></tr></thead>
+        <tbody>
+          <tr><td>Documento legal/contable</td><td>Movimiento de plata real</td></tr>
+          <tr><td>Se emite o se recibe</td><td>Se ejecuta cuando hay efectivo, transferencia, cheque</td></tr>
+          <tr><td>Puede no estar pagada todavía</td><td>Cada uno se asocia a una factura</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        💼 <strong>Ejemplo:</strong> El 1° de mayo facturás Gs. 5M a CASA RICA. El 10 de mayo te transfieren Gs. 2M (cobro parcial). El 25 de mayo te transfieren los Gs. 3M restantes (segundo cobro). Resultado: 1 factura + 2 cobros, factura pasa a "Pagada".
+      </div>
+    </section>
+
+
+    <!-- ══ IVA ══ -->
+    <section id="iva-uso">
+      <h2><span class="num">14</span> Pantalla: Resumen IVA</h2>
+      <p class="intro">Tu vista rápida del IVA del período. Lo que vas a presentar a la SET / DNIT.</p>
+
+      <h3>Los 3 cuadros principales</h3>
+      <table>
+        <thead><tr><th>Cuadro</th><th>Significa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>IVA ventas (Débito fiscal)</strong></td><td>IVA que cobraste a tus clientes (debe al fisco)</td></tr>
+          <tr><td><strong>IVA compras (Crédito fiscal)</strong></td><td>IVA que pagaste a tus proveedores (a favor)</td></tr>
+          <tr><td><strong>Diferencia</strong></td><td>Lo que efectivamente vas a pagar (débito − crédito)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Si "Compras" sale Gs. 0 pero sé que cargué compras...</h3>
+      <ol style="margin-left: 24px; margin-bottom: 14px;">
+        <li>Verificá que las facturas de compra estén en estado <strong>"Confirmado"</strong> (no en "Pendiente revisión")</li>
+        <li>Verificá que tengan <strong>proveedor</strong> asignado, no cliente</li>
+        <li>Verificá que las líneas de detalle tengan <strong>porcentaje de IVA</strong> (10% o 5%)</li>
+        <li>Verificá que la fecha de emisión esté <strong>dentro del período</strong> filtrado</li>
+      </ol>
+
+      <h3>Filtrar por período</h3>
+      <p>Arriba podés elegir un mes específico (formato MM/YYYY) o un rango personalizado. Si limpiás todo, te muestra todo el período cargado.</p>
+    </section>
+
+
+    <!-- ══ Conceptos ══ -->
+    <section id="conceptos">
+      <h2><span class="num">15</span> Conceptos importantes</h2>
+
+      <h3>📊 Facturado vs Cobrado — la diferencia clave</h3>
+      <p>Probablemente el concepto más importante a entender:</p>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="icon">🧾</div>
+          <h5>Facturado</h5>
+          <p>Lo que emitiste como factura, sin importar si te pagaron o no. Es lo que aparece en "Por cobrar" y en el gráfico de "Ingresos y egresos".</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">💵</div>
+          <h5>Cobrado</h5>
+          <p>La plata que realmente entró a la caja o cuenta bancaria. Es lo que aparece en "Ingresos cobrados" del dashboard.</p>
+        </div>
+      </div>
+
+      <div class="callout warning">
+        <strong>Ejemplo real:</strong> En mayo facturaste Gs. 50M a tus clientes, pero solo te pagaron Gs. 30M. Entonces: <strong>facturado mayo = Gs. 50M</strong> pero <strong>cobrado mayo = Gs. 30M</strong>. La diferencia (Gs. 20M) sigue en "Por cobrar" hasta que te paguen.
+      </div>
+
+      <h3>💰 Neto vs Bruto (con IVA y sin IVA)</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li><strong>NETO:</strong> precio sin IVA (lo que cargás al hacer la factura)</li>
+        <li><strong>BRUTO o TOTAL:</strong> precio + IVA (lo que el cliente realmente paga)</li>
+      </ul>
+      <p>Ejemplo: producto a Gs. 100.000 neto, con 10% IVA = Gs. 110.000 total. <strong>El sistema te pide el neto y calcula el total automáticamente.</strong></p>
+
+      <h3>🇵🇾 IVA paraguayo</h3>
+      <p>Solo hay 3 tasas válidas:</p>
+      <ul style="margin-left: 18px;">
+        <li><strong>10%:</strong> la mayoría de productos y servicios — <strong>aplica a cosméticos</strong></li>
+        <li><strong>5%:</strong> canasta familiar, medicamentos</li>
+        <li><strong>0% (exento):</strong> exportaciones, algunos servicios</li>
+      </ul>
+    </section>
+
+
+    <!-- ══ Estados ══ -->
+    <section id="estados">
+      <h2><span class="num">16</span> Estados de una factura</h2>
+
+      <h3>Estado de validación</h3>
+      <table>
+        <thead><tr><th>Estado</th><th>Significa</th><th>Cuándo aparece</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Confirmado</strong></td><td>Datos correctos, todo validado</td><td>Default al cargar manualmente</td></tr>
+          <tr><td><strong>Pendiente revisión</strong></td><td>La IA del OCR tuvo dudas</td><td>Solo en cargas por foto</td></tr>
+          <tr><td><strong>Rechazado</strong></td><td>Marcada como inválida</td><td>Si un admin la rechaza</td></tr>
+          <tr><td><strong>Anulado</strong></td><td>Se anuló con motivo</td><td>Al cancelar una factura</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Estado de pago</h3>
+      <table>
+        <thead><tr><th>Estado</th><th>Significa</th></tr></thead>
+        <tbody>
+          <tr><td>🟢 <strong>Pagado</strong></td><td>Suma de pagos = monto total</td></tr>
+          <tr><td>🟡 <strong>Pago parcial</strong></td><td>Algo se pagó pero queda saldo</td></tr>
+          <tr><td>🔴 <strong>No pagado</strong></td><td>Sin pagos registrados</td></tr>
+          <tr><td>⚫ <strong>Vencido</strong></td><td>Pasó la fecha de vencimiento y queda saldo</td></tr>
+          <tr><td>— <strong>No aplica</strong></td><td>Facturas de contado / Notas de crédito</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+
+    <!-- ══ Permisos ══ -->
+    <section id="permisos">
+      <h2><span class="num">17</span> Roles y permisos</h2>
+
+      <table>
+        <thead><tr><th>Rol</th><th>Quién</th><th>Qué puede hacer</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="role-tag role-admin">Admin</span></td>
+            <td>Dueño / gerencia</td>
+            <td>Todo: configurar empresa, alta de usuarios, eliminar, anular, configurar plan de cuentas</td>
+          </tr>
+          <tr>
+            <td><span class="role-tag role-operador">Operador</span></td>
+            <td>Administración</td>
+            <td>Cargar facturas, registrar cobros/pagos, actualizar inventario, ver reportes. NO puede gestionar usuarios.</td>
+          </tr>
+          <tr>
+            <td><span class="role-tag role-viewer">Viewer</span></td>
+            <td>Contador externo</td>
+            <td>Solo lectura: ver dashboards, reportes, exportar a Excel. No puede modificar nada.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        Los botones de "Nueva factura", "Nuevo cobro", etc. solo aparecen para roles con permiso de escritura (Admin y Operador). Si sos Viewer, no los vas a ver — es por diseño.
+      </div>
+    </section>
+
+
+    <!-- ══ Atajos ══ -->
+    <section id="atajos">
+      <h2><span class="num">18</span> Atajos y tips</h2>
+
+      <h3>⌨️ Teclas útiles</h3>
+      <table>
+        <thead><tr><th>Tecla</th><th>Para qué</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Búsqueda global (próximamente)</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Cerrar modal abierto</td></tr>
+          <tr><td><kbd>Tab</kbd></td><td>Pasar al campo siguiente en formularios</td></tr>
+          <tr><td><kbd>Enter</kbd></td><td>Submit en formularios</td></tr>
+        </tbody>
+      </table>
+
+      <h3>💡 Tips para usar mejor el sistema</h3>
+      <ol style="margin-left: 24px;">
+        <li><strong>Cargá las facturas el mismo día</strong> que las recibís. No dejes acumular — el OCR te lleva menos tiempo que escribir un WhatsApp.</li>
+        <li><strong>Revisá el dashboard cada mañana</strong>. El "Resumen inteligente" te dice qué necesita atención hoy.</li>
+        <li><strong>Configurá el punto de reorden</strong> en cada producto. Sin eso, el sistema no avisa nunca de stock bajo.</li>
+        <li><strong>Completá la dirección/ciudad de cada cliente</strong>. Sin eso, no aparecen en el mapa.</li>
+        <li><strong>Usá el deshacer</strong>. Si te equivocaste al guardar, tenés 5 segundos para cancelar sin dejar rastro.</li>
+        <li><strong>Exportá a Excel</strong> antes de cualquier reunión con el contador. Es 1 click y queda profesional.</li>
+      </ol>
+    </section>
+
+
+    <!-- ══ FAQ ══ -->
+    <section id="faq">
+      <h2><span class="num">19</span> Preguntas frecuentes</h2>
+
+      <div class="faq">
+
+        <details>
+          <summary>¿Por qué la columna RUC y Teléfono aparece vacía con "—"?</summary>
+          <div><p>Probablemente cargaste el cliente sin esos datos, o se importó del sistema viejo sin completarlos. Hacé click sobre el cliente y completalo.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Por qué todos mis productos figuran como "OK" si sé que faltan algunos?</summary>
+          <div><p>Porque el <strong>punto de reorden</strong> está en 0 en esos productos. El sistema no puede saber qué cantidad es "crítica" si no se lo decís. Editá cada producto y poné un mínimo razonable (ej: 500 frascos, 100 etiquetas).</p></div>
+        </details>
+
+        <details>
+          <summary>El IVA muestra Gs. 0 en compras pero sé que cargué compras este mes</summary>
+          <div>
+            <p>Tres causas posibles:</p>
+            <ol style="margin-left: 20px;">
+              <li>Las facturas de compra están en "Pendiente revisión" en vez de "Confirmado"</li>
+              <li>Se cargaron sin asignar proveedor</li>
+              <li>Los items no tienen porcentaje de IVA (están en 0%)</li>
+            </ol>
+            <p>Andá a Compras › Facturas de compra y revisá una por una.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>¿Puedo borrar una factura?</summary>
+          <div><p>No. Por trazabilidad fiscal, las facturas <strong>no se borran</strong>, solo se anulan. Quedan visibles pero marcadas como anuladas con motivo y fecha.</p></div>
+        </details>
+
+        <details>
+          <summary>Subí una factura con OCR pero los datos están mal</summary>
+          <div><p>El OCR puede equivocarse, especialmente si la foto está movida o el papel está roto. Por eso siempre revisás los datos antes de guardar. Si ya guardaste, podés:</p><p>1) Editar la factura directamente, o<br>2) Anularla y volver a cargarla manualmente.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Funciona en celular?</summary>
+          <div><p>Sí. La interfaz se adapta automáticamente. En el celular el menú aparece abajo como una barra fija con los 5 botones más usados.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Y si me quedo sin internet a mitad de cargar facturas?</summary>
+          <div><p>El sistema funciona offline para operaciones de lectura. Si querés cargar algo nuevo sin internet, se guarda en una cola local del navegador y se sincroniza automáticamente cuando vuelve la conexión.</p><p><strong>Limitación:</strong> el OCR y el chatbot necesitan internet siempre (usan IA de Google).</p></div>
+        </details>
+
+        <details>
+          <summary>¿Cuándo se cierra mi sesión automáticamente?</summary>
+          <div><p>A los 30 minutos sin actividad (sin mover el mouse, tipear o tocar la pantalla). Te avisa 60 segundos antes con un cartel. Cualquier movimiento reinicia el contador.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Quién puede cambiar mi contraseña?</summary>
+          <div><p>Solo vos, desde tu perfil. Si la olvidaste, podés pedir un reset por email desde la página de login.</p><p>El admin puede invalidar tu cuenta pero no puede ver ni cambiar tu contraseña — está cifrada.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Puedo exportar los datos?</summary>
+          <div><p>Sí, a Excel. Cualquier listado (clientes, facturas, inventario, IVA) tiene un botón "Exportar" arriba. Los reportes contables también se exportan en formato compatible con DNIT.</p></div>
+        </details>
+
+      </div>
+    </section>
+
+
+    <!-- ══ Problemas ══ -->
+    <section id="problemas">
+      <h2><span class="num">20</span> Si algo falla</h2>
+
+      <h3>🐌 La página tarda en cargar</h3>
+      <p>Si es la primera carga del día, el servidor de Render (donde corre el backend) puede estar "dormido" y tardar 30-60 segundos en despertar. Es normal. Las siguientes peticiones son instantáneas.</p>
+
+      <h3>🔌 "No pude conectarme con el servidor"</h3>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li>Verificá tu conexión a internet</li>
+        <li>Refrescá la página (<kbd>Ctrl</kbd> + <kbd>R</kbd>)</li>
+        <li>Esperá 1 minuto y volvé a intentar</li>
+      </ul>
+
+      <h3>🔒 "Tu sesión expiró"</h3>
+      <p>Ingresá de nuevo con tu usuario y contraseña. Si ya estás en una página, te va a redirigir al login.</p>
+
+      <h3>🤖 El chatbot no responde</h3>
+      <p>Verificá que tengas internet. El chatbot usa Gemini API y necesita conexión externa. Si Gemini está caído, va a fallar — esperá unos minutos.</p>
+
+      <h3>📞 Para reportar un bug o pedir ayuda</h3>
+      <p>Anotá los siguientes datos cuando reportes un problema:</p>
+      <ul style="margin-left: 18px; margin-bottom: 14px;">
+        <li>Qué intentaste hacer (paso a paso)</li>
+        <li>Qué esperabas que pase</li>
+        <li>Qué pasó en realidad</li>
+        <li>Captura de pantalla del error</li>
+        <li>Tu nombre de usuario y hora aproximada</li>
+      </ul>
+
+      <p>Con eso, quien arregla el sistema puede ir a los logs de auditoría y reconstruir lo que pasó.</p>
+    </section>
+
+    <!-- ══ Footer ══ -->
+    <div style="margin-top: 80px; padding-top: 28px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 12px;">
+      Guía de usuario · ERP Esplendida PY v5.0 · Mayo 2026<br>
+      Hecha para Esplendida Laboratorio de Cosméticos
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // Scroll spy
+  const links = document.querySelectorAll('nav.sidebar a');
+  const sections = document.querySelectorAll('section[id]');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.style.background = '');
+        const active = document.querySelector(`nav.sidebar a[href="#${e.target.id}"]`);
+        if (active) {
+          active.style.background = 'rgba(99,102,241,.1)';
+          active.style.borderLeftColor = 'var(--primary)';
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

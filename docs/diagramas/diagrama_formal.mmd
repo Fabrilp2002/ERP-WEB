@@ -1,0 +1,18 @@
+graph TD
+    A[Operador Empresarial] --> B{Punto de Captura Analógica/Digital}
+    B -->|Sube Factura Electrónica| C[Motor OCR - Google Gemini API]
+    B -->|Foto Documento Físico| C
+    B -->|Formulario Web/App| D((Validación y Consolidación Manual))
+    
+    C -->|Extracción Estructurada IA| D
+    D -->|Asiento Validado| E[Lógica de Negocio Central]
+    
+    E <--> F[(Base de Datos Local Encriptada)]
+    F -.->|Sincronización en 2do Plano| G[(Repositorio Nube Seguro)]
+    
+    G --> H[Estructura Milano: Plan de Cuentas, MP, Clientes]
+    H --> P[Gestor Documental Consolidado]
+    
+    H --> I[Módulo Analítica de Negocios BI]
+    I --> J[Dashboard Gerencial]
+    I --> K[Notificaciones Push Proactivas]

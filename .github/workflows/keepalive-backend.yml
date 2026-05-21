@@ -1,0 +1,42 @@
+name: Keep backend awake
+
+# Mantiene caliente al backend Render free tier para evitar cold start del login.
+# Render duerme tras 15 min de inactividad; un ping cada 5 min lo mantiene activo.
+#
+# Estrategia: este workflow + Vercel Cron en vercel.json + BackendKeepalive
+# component (mientras hay usuarios con la app abierta).
+
+on:
+  schedule:
+    # GitHub Actions cron mínimo permitido es 5 min, "best effort" (puede demorarse).
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Ping Render health
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Warm backend (with retry)
+        env:
+          BACKEND_URL: ${{ vars.ERP_BACKEND_URL || 'https://erp-web-backend-i5zv.onrender.com' }}
+        run: |
+          set -e
+          # Render puede tardar ~50s en cold start. Reintenta hasta 4 veces.
+          for i in 1 2 3 4; do
+            echo "Ping intento $i de 4..."
+            if curl --fail --silent --show-error --max-time 70 \
+                -H "X-Warmup: github-actions" \
+                -H "User-Agent: keepalive-bot/1.0" \
+                "$BACKEND_URL/health" > /dev/null; then
+              echo "OK en intento $i"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Falló tras 4 intentos"
+          exit 1

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Supabase — Deploy BOM y verificaciones</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --supabase: #3ecf8e;
+    --supabase-dark: #1f9d6c;
+    --indigo: #6366f1;
+    --pink: #ec4899;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --green: #10b981;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+    color: white;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 60%; height: 200%;
+    background: radial-gradient(ellipse, rgba(62,207,142,.2), transparent 70%);
+  }
+  .hero .badge {
+    display: inline-block;
+    background: var(--supabase);
+    color: black;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    letter-spacing: .05em;
+  }
+  .hero h1 { font-size: 32px; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+  .hero .gradient { color: var(--supabase); }
+  .hero p { font-size: 16px; color: rgba(255,255,255,.75); max-width: 720px; }
+
+  /* Container */
+  .container { max-width: 980px; margin: 0 auto; padding: 40px; }
+
+  /* Steps */
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .step-num {
+    position: absolute;
+    top: -14px;
+    left: 22px;
+    background: linear-gradient(135deg, var(--supabase), var(--supabase-dark));
+    color: black;
+    font-weight: 800;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(62,207,142,.3);
+  }
+  .step h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    margin-top: 4px;
+  }
+  .step .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .step .meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-left: 8px;
+  }
+
+  /* Sub-steps */
+  ol.substeps { padding-left: 0; counter-reset: substep; list-style: none; margin: 14px 0; }
+  ol.substeps > li {
+    position: relative;
+    padding: 12px 14px 12px 48px;
+    background: var(--surface2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    counter-increment: substep;
+    font-size: 14px;
+  }
+  ol.substeps > li::before {
+    content: counter(substep);
+    position: absolute;
+    left: 14px; top: 10px;
+    width: 22px; height: 22px;
+    background: var(--text);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  ol.substeps > li strong { color: var(--text); }
+
+  /* Callouts */
+  .callout {
+    background: rgba(99,102,241,.07);
+    border-left: 4px solid var(--indigo);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .callout.warning { background: rgba(245,158,11,.08); border-left-color: var(--amber); }
+  .callout.success { background: rgba(16,185,129,.08); border-left-color: var(--green); }
+  .callout.danger  { background: rgba(239,68,68,.07);  border-left-color: var(--red); }
+  .callout.tip     { background: rgba(236,72,153,.06); border-left-color: var(--pink); }
+  .callout strong { font-weight: 700; }
+
+  /* Code blocks */
+  .code-block {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 12px 0;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .code-block .copy-btn:hover { background: rgba(255,255,255,.2); }
+  .code-block .copy-btn.copied { background: var(--green); border-color: var(--green); }
+  .code-block .label {
+    color: var(--supabase);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+  pre {
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  code.inline {
+    background: var(--surface2);
+    color: var(--indigo);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 13px;
+  }
+
+  /* Verification */
+  .verify {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .verify h4 {
+    color: #064e3b;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .verify p { font-size: 13px; color: #064e3b; margin: 0; }
+
+  /* Sections */
+  h3 { font-size: 18px; font-weight: 700; margin: 24px 0 10px; }
+  p { margin-bottom: 12px; }
+  ul { padding-left: 22px; margin: 10px 0; }
+  ul li { margin-bottom: 5px; }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .toc h3 { margin-top: 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .toc ol { padding-left: 22px; }
+  .toc a { color: var(--indigo); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+  }
+  .tag-required { background: #fee2e2; color: #991b1b; }
+  .tag-optional { background: #dbeafe; color: #1e40af; }
+  .tag-verify { background: #d1fae5; color: #065f46; }
+
+  @media (max-width: 768px) {
+    .container { padding: 24px 16px; }
+    .hero { padding: 28px 20px; }
+    .hero h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">SUPABASE · DEPLOY GUIDE</div>
+  <h1>Guía completa para deployar <span class="gradient">BOM y reportes</span> en Supabase</h1>
+  <p>Paso a paso para aplicar la migración del Bill of Materials y verificar que todo quedó funcionando. Tiempo estimado: 5-10 minutos.</p>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <h3>📋 Contenido</h3>
+    <ol>
+      <li><a href="#requisitos">Requisitos previos</a></li>
+      <li><a href="#acceso">Acceso al SQL Editor</a></li>
+      <li><a href="#migracion">Aplicar la migración SQL</a></li>
+      <li><a href="#verificar">Verificar que las tablas se crearon</a></li>
+      <li><a href="#rls">Configurar Row Level Security (RLS)</a></li>
+      <li><a href="#datos">Cargar datos iniciales (opcional)</a></li>
+      <li><a href="#troubleshooting">Si algo falla</a></li>
+    </ol>
+  </div>
+
+
+  <!-- Paso 1: Requisitos -->
+  <div class="step" id="requisitos">
+    <span class="step-num">1</span>
+    <h2>Requisitos previos <span class="meta">⏱ 1 min</span></h2>
+    <p class="subtitle">Asegurate de tener acceso a esto antes de empezar.</p>
+
+    <h3>Lo que necesitás</h3>
+    <ul>
+      <li><strong>Acceso al proyecto ERP WEB en Supabase</strong> con rol <code class="inline">owner</code> o <code class="inline">developer</code></li>
+      <li>URL del proyecto: <code class="inline">https://supabase.com/dashboard/project/skwxkmmnvdojagdruthi</code></li>
+      <li>El navegador (Chrome, Firefox, etc.)</li>
+    </ul>
+
+    <div class="callout warning">
+      <strong>⚠ Si sos colaborador con permisos limitados:</strong> es posible que no puedas ejecutar DDL (CREATE TABLE). Pedile al dueño (Carlos / gfcarlos04) que ejecute la migración o que te promueva al rol <code class="inline">developer</code>.
+    </div>
+  </div>
+
+
+  <!-- Paso 2: Acceso -->
+  <div class="step" id="acceso">
+    <span class="step-num">2</span>
+    <h2>Acceso al SQL Editor <span class="meta">⏱ 30 seg</span></h2>
+    <p class="subtitle">Donde vamos a ejecutar todo.</p>
+
+    <ol class="substeps">
+      <li>Andá a <strong>https://supabase.com</strong> y entrá con la cuenta que tiene acceso al proyecto</li>
+      <li>Click en el proyecto <strong>ERP WEB</strong> (us-east-2, tier NANO)</li>
+      <li>En el menú lateral izquierdo, click en <strong>SQL Editor</strong> (ícono de terminal/database)</li>
+      <li>Click en <strong>"+ New query"</strong> arriba a la derecha</li>
+    </ol>
+
+    <div class="callout tip">
+      💡 Te queda una pestaña en blanco lista para pegar SQL. Acá vas a hacer todos los pasos siguientes.
+    </div>
+  </div>
+
+
+  <!-- Paso 3: Migración -->
+  <div class="step" id="migracion">
+    <span class="step-num">3</span>
+    <h2>Aplicar la migración del BOM <span class="meta">⏱ 1-2 min</span> <span class="tag tag-required">OBLIGATORIO</span></h2>
+    <p class="subtitle">Esto crea las tablas, columnas y vistas nuevas. Es la parte central.</p>
+
+    <h3>3.1 — Copiá el SQL completo</h3>
+    <p>Acá está la migración completa. Hacé click en <strong>Copiar</strong> arriba a la derecha del bloque de código:</p>
+
+    <div class="code-block">
+      <div class="label">SQL Migration · 2026-05-11_bom_recetas.sql</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- =============================================================================
+-- MIGRATION: Bill of Materials (BOM) — Recetas de productos
+-- Fecha: 2026-05-11
+-- =============================================================================
+
+-- 1. Distinguir productos terminados de insumos
+ALTER TABLE inventario
+  ADD COLUMN IF NOT EXISTS es_producto_terminado BOOLEAN NOT NULL DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS precio_venta DECIMAL(15,2) NULL,
+  ADD COLUMN IF NOT EXISTS notas_produccion TEXT NULL;
+
+COMMENT ON COLUMN inventario.es_producto_terminado IS
+  'TRUE = producto terminado (puede tener receta). FALSE = insumo/materia prima.';
+COMMENT ON COLUMN inventario.precio_venta IS
+  'Precio de venta sugerido por unidad (opcional). Usado para calcular margen.';
+
+-- 2. Tabla de recetas
+CREATE TABLE IF NOT EXISTS recetas (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    empresa_id          UUID            NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+    producto_id         UUID            NOT NULL REFERENCES inventario(id) ON DELETE CASCADE,
+    nombre              VARCHAR(200)    NOT NULL,
+    version             VARCHAR(50)     NOT NULL DEFAULT 'v1',
+    rendimiento         DECIMAL(15,4)   NOT NULL DEFAULT 1,
+    unidad_rendimiento  VARCHAR(20)     NOT NULL DEFAULT 'unidad',
+    activa              BOOLEAN         NOT NULL DEFAULT TRUE,
+    notas               TEXT,
+    usuario_creacion_id UUID            REFERENCES usuarios(id),
+    fecha_creacion      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    fecha_modificacion  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_recetas_producto_activa
+  ON recetas (empresa_id, producto_id)
+  WHERE activa = TRUE;
+
+CREATE INDEX IF NOT EXISTS idx_recetas_empresa ON recetas (empresa_id);
+CREATE INDEX IF NOT EXISTS idx_recetas_producto ON recetas (producto_id);
+
+-- 3. Items de cada receta
+CREATE TABLE IF NOT EXISTS receta_items (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    receta_id           UUID            NOT NULL REFERENCES recetas(id) ON DELETE CASCADE,
+    insumo_id           UUID            NOT NULL REFERENCES inventario(id),
+    cantidad            DECIMAL(15,4)   NOT NULL,
+    unidad_medida       VARCHAR(20)     NOT NULL,
+    orden               INTEGER         NOT NULL DEFAULT 0,
+    es_critico          BOOLEAN         NOT NULL DEFAULT FALSE,
+    notas               TEXT,
+    CONSTRAINT cantidad_positiva CHECK (cantidad > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_receta_items_receta ON receta_items (receta_id, orden);
+CREATE INDEX IF NOT EXISTS idx_receta_items_insumo ON receta_items (insumo_id);
+
+-- 4. Lotes de produccion
+CREATE TABLE IF NOT EXISTS lotes_produccion (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    empresa_id          UUID            NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+    receta_id           UUID            NOT NULL REFERENCES recetas(id),
+    numero_lote         VARCHAR(50)     NOT NULL,
+    cantidad_planificada DECIMAL(15,4)  NOT NULL,
+    cantidad_producida  DECIMAL(15,4)   NOT NULL DEFAULT 0,
+    estado              VARCHAR(20)     NOT NULL DEFAULT 'planificado'
+                        CHECK (estado IN ('planificado','en_proceso','completado','cancelado')),
+    fecha_planificada   DATE            NOT NULL,
+    fecha_completado    DATE,
+    fecha_vencimiento   DATE,
+    costo_total         DECIMAL(15,2),
+    notas               TEXT,
+    usuario_id          UUID            REFERENCES usuarios(id),
+    fecha_creacion      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    UNIQUE (empresa_id, numero_lote)
+);
+
+CREATE INDEX IF NOT EXISTS idx_lotes_empresa_estado ON lotes_produccion (empresa_id, estado);
+CREATE INDEX IF NOT EXISTS idx_lotes_fecha ON lotes_produccion (fecha_planificada);
+
+-- 5. Vista de receta enriquecida (costo total + unitario)
+CREATE OR REPLACE VIEW v_recetas_detalle AS
+SELECT
+    r.id                                                     AS receta_id,
+    r.empresa_id,
+    r.producto_id,
+    p.descripcion                                            AS producto_nombre,
+    p.codigo                                                 AS producto_codigo,
+    p.precio_venta                                           AS producto_precio_venta,
+    r.nombre,
+    r.version,
+    r.rendimiento,
+    r.unidad_rendimiento,
+    r.activa,
+    COALESCE(SUM(ri.cantidad * i.costo_unitario), 0)         AS costo_total_receta,
+    CASE WHEN r.rendimiento > 0
+        THEN COALESCE(SUM(ri.cantidad * i.costo_unitario), 0) / r.rendimiento
+        ELSE 0
+    END                                                       AS costo_unitario,
+    COUNT(ri.id)                                             AS cantidad_items
+FROM recetas r
+JOIN inventario p ON p.id = r.producto_id
+LEFT JOIN receta_items ri ON ri.receta_id = r.id
+LEFT JOIN inventario i ON i.id = ri.insumo_id
+GROUP BY r.id, r.empresa_id, r.producto_id, p.descripcion,
+         p.codigo, p.precio_venta, r.nombre, r.version,
+         r.rendimiento, r.unidad_rendimiento, r.activa;
+
+-- 6. Vista de capacidad de produccion
+CREATE OR REPLACE VIEW v_capacidad_produccion AS
+WITH lim AS (
+    SELECT
+        r.id            AS receta_id,
+        r.producto_id,
+        r.empresa_id,
+        ri.insumo_id,
+        i.descripcion   AS insumo_nombre,
+        i.cantidad_actual AS stock_actual,
+        ri.cantidad     AS cantidad_requerida,
+        CASE WHEN ri.cantidad > 0
+            THEN FLOOR(i.cantidad_actual / ri.cantidad)
+            ELSE 0
+        END             AS batches_posibles_por_insumo
+    FROM recetas r
+    JOIN receta_items ri ON ri.receta_id = r.id
+    JOIN inventario i ON i.id = ri.insumo_id
+    WHERE r.activa = TRUE
+)
+SELECT
+    receta_id,
+    producto_id,
+    empresa_id,
+    MIN(batches_posibles_por_insumo)                AS batches_posibles,
+    (SELECT insumo_nombre FROM lim l2
+     WHERE l2.receta_id = lim.receta_id
+     ORDER BY batches_posibles_por_insumo ASC LIMIT 1) AS insumo_limitante
+FROM lim
+GROUP BY receta_id, producto_id, empresa_id;</pre>
+    </div>
+
+    <h3>3.2 — Pegalo en el SQL Editor</h3>
+    <ol class="substeps">
+      <li><strong>Pegá todo el SQL</strong> en la query en blanco que dejaste abierta en el paso 2</li>
+      <li>Click en el botón verde <strong>"Run"</strong> (o presioná <code class="inline">Ctrl+Enter</code>)</li>
+      <li>Esperá unos segundos</li>
+    </ol>
+
+    <div class="callout success">
+      <strong>✅ Resultado esperado:</strong> En la parte de abajo del SQL Editor debería aparecer:<br>
+      <code class="inline">Success. No rows returned.</code><br>
+      O algo similar indicando que se ejecutó sin error.
+    </div>
+
+    <div class="callout warning">
+      <strong>⚠ Si ves un error</strong> de tipo <em>"relation 'empresas' does not exist"</em> o similar, significa que estás en un proyecto Supabase equivocado. Verificá que estés en el proyecto ERP WEB (no el de Semáforo de Pobreza ni otro).
+    </div>
+  </div>
+
+
+  <!-- Paso 4: Verificar -->
+  <div class="step" id="verificar">
+    <span class="step-num">4</span>
+    <h2>Verificar que las tablas se crearon <span class="meta">⏱ 30 seg</span> <span class="tag tag-verify">VERIFICACIÓN</span></h2>
+    <p class="subtitle">Ejecutá estas 3 queries de verificación para confirmar que todo está en orden.</p>
+
+    <h3>4.1 — Verificar tablas nuevas</h3>
+    <div class="code-block">
+      <div class="label">Query de verificación</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- ¿Las 3 tablas nuevas existen?
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+  AND table_name IN ('recetas', 'receta_items', 'lotes_produccion')
+ORDER BY table_name;</pre>
+    </div>
+
+    <div class="verify">
+      <h4>✅ Esperado: 3 filas</h4>
+      <p><code class="inline">lotes_produccion</code>, <code class="inline">receta_items</code>, <code class="inline">recetas</code></p>
+    </div>
+
+    <h3>4.2 — Verificar columnas nuevas en inventario</h3>
+    <div class="code-block">
+      <div class="label">Query de verificación</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- ¿Los 3 campos nuevos están en inventario?
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND table_name = 'inventario'
+  AND column_name IN ('es_producto_terminado', 'precio_venta', 'notas_produccion')
+ORDER BY column_name;</pre>
+    </div>
+
+    <div class="verify">
+      <h4>✅ Esperado: 3 filas</h4>
+      <p><code class="inline">es_producto_terminado</code> (boolean), <code class="inline">notas_produccion</code> (text), <code class="inline">precio_venta</code> (numeric)</p>
+    </div>
+
+    <h3>4.3 — Verificar las 2 vistas</h3>
+    <div class="code-block">
+      <div class="label">Query de verificación</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- ¿Las 2 vistas existen?
+SELECT viewname
+FROM pg_views
+WHERE schemaname = 'public'
+  AND viewname IN ('v_recetas_detalle', 'v_capacidad_produccion')
+ORDER BY viewname;</pre>
+    </div>
+
+    <div class="verify">
+      <h4>✅ Esperado: 2 filas</h4>
+      <p><code class="inline">v_capacidad_produccion</code>, <code class="inline">v_recetas_detalle</code></p>
+    </div>
+  </div>
+
+
+  <!-- Paso 5: RLS -->
+  <div class="step" id="rls">
+    <span class="step-num">5</span>
+    <h2>Configurar Row Level Security (RLS) <span class="meta">⏱ 2 min</span> <span class="tag tag-optional">RECOMENDADO</span></h2>
+    <p class="subtitle">Activar RLS para que cada empresa solo vea sus propias recetas. <strong>Solo necesario si el resto del sistema usa RLS.</strong></p>
+
+    <div class="callout">
+      <strong>¿Cuándo aplicar esto?</strong><br>
+      Si tu tabla <code class="inline">comprobantes</code> ya tiene RLS habilitado, tenés que hacer lo mismo con las tablas nuevas. Si no lo usás (porque filtrás por <code class="inline">empresa_id</code> en el backend), podés saltarte este paso.
+    </div>
+
+    <h3>5.1 — Verificar si el resto del sistema usa RLS</h3>
+    <div class="code-block">
+      <div class="label">Query de verificación</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- ¿Otras tablas tienen RLS activo?
+SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
+  AND tablename IN ('comprobantes', 'clientes', 'proveedores', 'inventario')
+ORDER BY tablename;</pre>
+    </div>
+
+    <p>Si <code class="inline">rowsecurity = true</code> en esas tablas, ejecutá la siguiente. Si todas dicen <code class="inline">false</code>, saltá al paso 6.</p>
+
+    <h3>5.2 — Aplicar RLS a las tablas nuevas (si corresponde)</h3>
+    <div class="code-block">
+      <div class="label">RLS para BOM</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- Activar RLS
+ALTER TABLE recetas          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE receta_items     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lotes_produccion ENABLE ROW LEVEL SECURITY;
+
+-- Política: usuarios autenticados pueden hacer todo sobre las recetas de SU empresa
+CREATE POLICY recetas_tenant_isolation ON recetas
+  USING (empresa_id::text = auth.jwt() ->> 'empresa_id');
+
+CREATE POLICY receta_items_via_receta ON receta_items
+  USING (
+    EXISTS (
+      SELECT 1 FROM recetas r
+      WHERE r.id = receta_items.receta_id
+        AND r.empresa_id::text = auth.jwt() ->> 'empresa_id'
+    )
+  );
+
+CREATE POLICY lotes_tenant_isolation ON lotes_produccion
+  USING (empresa_id::text = auth.jwt() ->> 'empresa_id');</pre>
+    </div>
+
+    <div class="callout warning">
+      <strong>⚠ Cuidado:</strong> Si tu backend usa el <code class="inline">service_role key</code> para acceder a la DB (que es el patrón del ERP actual), las políticas RLS son bypass por el service role — no afectan el funcionamiento. Las RLS solo aplican si te conectás con la <code class="inline">anon key</code>.
+    </div>
+  </div>
+
+
+  <!-- Paso 6: Datos iniciales -->
+  <div class="step" id="datos">
+    <span class="step-num">6</span>
+    <h2>Cargar datos iniciales <span class="meta">⏱ 1 min</span> <span class="tag tag-optional">OPCIONAL</span></h2>
+    <p class="subtitle">Marcar algunos productos existentes como "terminados" para empezar a usar el BOM.</p>
+
+    <div class="callout">
+      <strong>Sin esto:</strong> el sistema funcionará pero la lista de "productos terminados" estará vacía al crear una receta nueva. El usuario podrá igualmente elegir cualquier item del inventario y el sistema lo promoverá automáticamente.
+    </div>
+
+    <h3>6.1 — Marcar productos terminados (manual)</h3>
+    <p>Buscá los productos terminados que ya tenés en inventario y marcalos:</p>
+
+    <div class="code-block">
+      <div class="label">Marcar productos terminados</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- Marcar como producto terminado todo lo que se llama "Bronceador" o "Crema"
+UPDATE inventario
+SET es_producto_terminado = TRUE
+WHERE (
+    descripcion ILIKE '%bronceador%'
+    OR descripcion ILIKE '%crema%'
+    OR descripcion ILIKE '%locion%'
+    OR descripcion ILIKE '%loción%'
+)
+AND activo = TRUE;
+
+-- Ver qué productos quedaron marcados como terminados
+SELECT id, codigo, descripcion, precio_venta
+FROM inventario
+WHERE es_producto_terminado = TRUE
+  AND activo = TRUE
+ORDER BY descripcion;</pre>
+    </div>
+
+    <h3>6.2 — Cargar precio de venta sugerido (opcional)</h3>
+    <p>Si tenés los precios de venta a mano, podés cargarlos para que el sistema calcule el margen automáticamente:</p>
+
+    <div class="code-block">
+      <div class="label">Ejemplo: cargar precio de venta</div>
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- Ejemplo: bronceador 150ml a 18.000 Gs
+UPDATE inventario
+SET precio_venta = 18000
+WHERE descripcion ILIKE '%bronceador%150%';
+
+-- Ver los precios cargados
+SELECT codigo, descripcion, costo_unitario, precio_venta,
+       ROUND(precio_venta - costo_unitario, 0) AS margen_bruto
+FROM inventario
+WHERE es_producto_terminado = TRUE
+  AND precio_venta IS NOT NULL;</pre>
+    </div>
+  </div>
+
+
+  <!-- Paso 7: Troubleshooting -->
+  <div class="step" id="troubleshooting">
+    <span class="step-num">7</span>
+    <h2>Si algo falla <span class="meta">⏱ varía</span></h2>
+    <p class="subtitle">Errores comunes y cómo resolverlos.</p>
+
+    <h3>❌ "relation 'empresas' does not exist"</h3>
+    <p>Estás conectado al proyecto Supabase equivocado. Verificá:</p>
+    <ul>
+      <li>El proyecto debe ser <strong>ERP WEB</strong> (skwxkmmnvdojagdruthi), no el del Semáforo de Pobreza</li>
+      <li>Volvé al dashboard de Supabase y elegí el proyecto correcto</li>
+    </ul>
+
+    <h3>❌ "extension uuid-ossp does not exist"</h3>
+    <p>El esquema base no se aplicó completamente. Ejecutá primero:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</pre>
+    </div>
+    <p>Y después volvé a aplicar la migración del BOM.</p>
+
+    <h3>❌ "permission denied for table inventario"</h3>
+    <p>Tu cuenta no tiene rol <strong>owner</strong> ni <strong>developer</strong>. Pedile al dueño del proyecto que la ejecute o que te promueva.</p>
+
+    <h3>❌ "duplicate key value violates unique constraint"</h3>
+    <p>Esto pasa si ya ejecutaste la migración antes. La migración usa <code class="inline">CREATE TABLE IF NOT EXISTS</code> así que es seguro de re-ejecutar, pero si querés empezar limpio:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>-- ⚠ Esto borra TODO el BOM. Solo úsalo si querés empezar de cero.
+DROP VIEW  IF EXISTS v_capacidad_produccion CASCADE;
+DROP VIEW  IF EXISTS v_recetas_detalle      CASCADE;
+DROP TABLE IF EXISTS lotes_produccion       CASCADE;
+DROP TABLE IF EXISTS receta_items           CASCADE;
+DROP TABLE IF EXISTS recetas                CASCADE;
+ALTER TABLE inventario DROP COLUMN IF EXISTS es_producto_terminado;
+ALTER TABLE inventario DROP COLUMN IF EXISTS precio_venta;
+ALTER TABLE inventario DROP COLUMN IF EXISTS notas_produccion;</pre>
+    </div>
+  </div>
+
+
+  <!-- Resumen final -->
+  <div class="step" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-color: var(--green);">
+    <span class="step-num" style="background: var(--green); color: white;">✓</span>
+    <h2 style="color: #064e3b;">Cuando termines</h2>
+    <p style="color: #065f46;">Si todos los pasos pasaron OK, vas a poder:</p>
+    <ul style="color: #064e3b;">
+      <li>Entrar al ERP en producción</li>
+      <li>Ir a <strong>Inventario → Recetas</strong> sin error</li>
+      <li>Crear una receta nueva (por ejemplo: Bronceador FPS 15 con sus ingredientes)</li>
+      <li>Ver el costo unitario y margen calculado automáticamente</li>
+      <li>Ir a <strong>Inventario → Capacidad</strong> para ver cuántas unidades podés producir</li>
+    </ul>
+    <p style="margin-top: 16px; color: #065f46;">
+      <strong>Si compartiste esta guía con una extensión de Claude o asistente IA:</strong>
+      pegale el bloque SQL del paso 3 y pedile que lo ejecute. Después que corra los pasos de verificación 4.1, 4.2 y 4.3 para confirmar que todo está OK.
+    </p>
+  </div>
+
+
+  <!-- Cómo usar con Claude -->
+  <div class="step" style="border-color: var(--indigo);">
+    <span class="step-num" style="background: var(--indigo); color: white;">🤖</span>
+    <h2>Prompts listos para Claude / Asistente</h2>
+    <p class="subtitle">Si vas a darle esta tarea a un asistente IA con acceso a Supabase, copiale uno de estos prompts.</p>
+
+    <h3>Prompt 1: Aplicar la migración</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>Hola Claude. Necesito que ejecutes una migración SQL en el proyecto Supabase
+"ERP WEB" (project_id: skwxkmmnvdojagdruthi).
+
+Por favor:
+1. Aplicá el SQL que te paso abajo (es seguro re-ejecutar, usa IF NOT EXISTS)
+2. Después ejecutá estas 3 verificaciones:
+   - SELECT table_name FROM information_schema.tables WHERE table_schema='public'
+     AND table_name IN ('recetas','receta_items','lotes_produccion');
+   - SELECT column_name FROM information_schema.columns WHERE table_schema='public'
+     AND table_name='inventario' AND column_name IN ('es_producto_terminado','precio_venta','notas_produccion');
+   - SELECT viewname FROM pg_views WHERE schemaname='public'
+     AND viewname IN ('v_recetas_detalle','v_capacidad_produccion');
+3. Reportame: cuántas filas devolvió cada verificación
+
+SQL a aplicar:
+[acá pegás el SQL del paso 3.1]</pre>
+    </div>
+
+    <h3>Prompt 2: Verificar después del deploy</h3>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+<pre>Claude, conectate al proyecto Supabase "ERP WEB" y verificá:
+
+1. Las tablas recetas, receta_items y lotes_produccion existen
+2. La tabla inventario tiene las columnas es_producto_terminado, precio_venta y notas_produccion
+3. Las vistas v_recetas_detalle y v_capacidad_produccion existen
+4. Cuántos items hay marcados como es_producto_terminado=TRUE
+5. Si hay alguna receta cargada
+
+Mostrame los resultados en una tabla resumen.</pre>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 12px;">
+    Guía generada para Esplendida PY · ERP v6.0 · Mayo 2026<br>
+    Migración: <code class="inline">db/migrations/2026-05-11_bom_recetas.sql</code>
+  </div>
+
+</div>
+
+<script>
+  function copyCode(btn) {
+    const codeBlock = btn.parentElement;
+    const text = codeBlock.querySelector('pre').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copiar';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

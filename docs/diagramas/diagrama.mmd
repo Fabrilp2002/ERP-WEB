@@ -1,0 +1,22 @@
+graph TD
+    A[Usuario: Web/App Movil] --> B{Metodo de Carga}
+    B -->|Sube PDF| C[Modulo de Inteligencia Artificial]
+    B -->|Saca Foto| C
+    B -->|Completar Formulario| D[Carga Manual de Datos]
+    
+    C -->|Usa Gemini API y Extrae Datos| D[Validacion del Usuario / Formulario Lleno]
+    D -->|Edita o Confirma| E[Procesador Central]
+    
+    E --> F[(Base de Datos Local / Offline)]
+    F -.->|Cuando hay Internet| G[(Datos en la Nube / Respaldo Web)]
+    
+    G --> H[Estructura Contable tipo MILANO]
+    H --> I[Modulo Gastos y Ventas]
+    H --> J[Modulo Stocks / MP]
+    H --> K[Cuentas Corrientes Clientes]
+    H --> P[Gestor Documental: Extraer/Exportar Reportes, PDF, Excel]
+    
+    H --> L((Dashboard / Graficos Dinamicos))
+    L --> M[Variacion de Precios de Insumos]
+    L --> N[Margenes de Utilidad Mensual]
+    L --> O[Flujo de Caja Real]
