@@ -1,0 +1,46 @@
+name: Deploy Documentation to GitHub Pages
+
+# Despliega automaticamente /docs/sdd/ a GitHub Pages cada vez que se hace
+# push a main. La primera vez que se ejecute, hay que activar Pages en:
+#   Settings -> Pages -> Source: "GitHub Actions"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/sdd/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:  # permite ejecucion manual
+
+# Permisos necesarios para que el workflow pueda deployar a Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Solo permite 1 deployment a la vez
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload docs/sdd as artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./docs/sdd
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

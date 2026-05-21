@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis de mejoras — ERP Esplendida</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface2: #f4f4f5;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --muted: #71717a;
+    --indigo: #6366f1;
+    --pink: #ec4899;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background:
+      radial-gradient(circle at 0% 0%, rgba(236,72,153,.15), transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(99,102,241,.15), transparent 50%),
+      linear-gradient(135deg, #18181b 0%, #27272a 100%);
+    color: white;
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 10px; }
+  .hero h1 .gradient {
+    background: linear-gradient(135deg, #ec4899, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p.lead { font-size: 17px; color: rgba(255,255,255,.75); max-width: 720px; }
+  .hero .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .badges span {
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,.15);
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 0 40px;
+    display: flex;
+    overflow-x: auto;
+  }
+  .tabs a {
+    padding: 16px 22px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .tabs a:hover { color: var(--text); }
+  .tabs a.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
+  /* ── Container ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px; }
+
+  /* ── Sections ── */
+  section { margin-bottom: 64px; scroll-margin-top: 80px; }
+  section .meta-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+  }
+  .meta-design { background: #eef2ff; color: #4338ca; }
+  .meta-finance { background: #fef3c7; color: #92400e; }
+  .meta-priority { background: #fce7f3; color: #9d174d; }
+  section h2 {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  section p.subtitle { color: var(--muted); font-size: 16px; margin-bottom: 28px; }
+
+  h3 { font-size: 20px; font-weight: 700; margin: 30px 0 12px; }
+  h4 { font-size: 15px; font-weight: 700; margin: 18px 0 6px; }
+  p { margin-bottom: 14px; }
+
+  /* ── Cards ── */
+  .issue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 14px;
+    transition: all .15s;
+  }
+  .issue-card:hover { border-color: #c7d2fe; box-shadow: 0 4px 16px rgba(99,102,241,.06); }
+  .issue-card .issue-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .issue-card .issue-num {
+    background: linear-gradient(135deg, var(--indigo), var(--pink));
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .issue-card h4.issue-title {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.3;
+    flex: 1;
+  }
+  .issue-card .impact {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .impact-high { background: #fee2e2; color: #991b1b; }
+  .impact-medium { background: #fef3c7; color: #92400e; }
+  .impact-low { background: #d1fae5; color: #065f46; }
+  .issue-card .meta {
+    display: flex; gap: 14px; font-size: 12px; color: var(--muted);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .issue-card .meta strong { color: var(--text); }
+  .issue-card .description { color: var(--text); font-size: 14px; line-height: 1.6; margin-bottom: 0; }
+  .issue-card .solution {
+    background: #f0fdf4;
+    border-left: 3px solid var(--emerald);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: #064e3b;
+  }
+  .issue-card .solution strong { color: #022c22; }
+
+  /* ── Comparison ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .compare-side {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .compare-side .label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+  }
+  .compare-side.before { border-left: 3px solid var(--red); }
+  .compare-side.before .label { color: var(--red); }
+  .compare-side.after { border-left: 3px solid var(--emerald); }
+  .compare-side.after .label { color: var(--emerald); }
+
+  /* ── Mockup boxes ── */
+  .mockup {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 18px;
+    color: #cbd5e1;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  .mockup .green { color: #86efac; }
+  .mockup .red { color: #fca5a5; }
+  .mockup .amber { color: #fcd34d; }
+  .mockup .blue { color: #93c5fd; }
+  .mockup .dim { color: #64748b; }
+
+  /* ── Roadmap ── */
+  .roadmap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+  .roadmap-row {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--surface2);
+  }
+  .roadmap-row:last-child { border-bottom: none; }
+  .roadmap-row .week {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: center;
+    background: var(--surface2);
+    padding: 6px 8px;
+    border-radius: 8px;
+  }
+  .roadmap-row .task strong { display: block; margin-bottom: 2px; font-size: 14px; }
+  .roadmap-row .task span { font-size: 12px; color: var(--muted); }
+  .roadmap-row .effort {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .effort-S { background: #d1fae5; color: #065f46; }
+  .effort-M { background: #fef3c7; color: #92400e; }
+  .effort-L { background: #fee2e2; color: #991b1b; }
+
+  /* ── Quote ── */
+  .quote {
+    background: linear-gradient(135deg, #fce7f3, #e0e7ff);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    font-size: 17px;
+    font-style: italic;
+    color: #1e1b4b;
+    border-left: 4px solid var(--indigo);
+  }
+
+  /* ── Highlights ── */
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 18px 0 24px;
+  }
+  .highlight {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--indigo);
+  }
+  .highlight .num { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--indigo), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
+  .highlight .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .highlight .desc { font-size: 13px; margin-top: 8px; }
+
+  ul { padding-left: 22px; margin-bottom: 14px; }
+  ul li { margin-bottom: 6px; }
+
+  code {
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', monospace;
+    font-size: 12.5px;
+    color: var(--indigo);
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 24px 18px; }
+    .compare { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .tabs { padding: 0 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <h1>Análisis de mejoras<br><span class="gradient">ERP Esplendida PY</span></h1>
+  <p class="lead">Revisión profunda de la aplicación desde dos perspectivas: <strong style="color:white;">diseño de producto</strong> y <strong style="color:white;">gestión financiera</strong>. 24 oportunidades de mejora priorizadas.</p>
+  <div class="badges">
+    <span>🎨 8 mejoras de diseño</span>
+    <span>💰 11 mejoras financieras</span>
+    <span>⚡ 5 quick wins</span>
+    <span>📅 Roadmap 10 semanas</span>
+  </div>
+</div>
+
+<!-- ══ TABS ══ -->
+<div class="tabs">
+  <a href="#resumen" class="active">📋 Resumen</a>
+  <a href="#diseno">🎨 Diseño</a>
+  <a href="#finanzas">💰 Finanzas</a>
+  <a href="#quickwins">⚡ Quick wins</a>
+  <a href="#roadmap">📅 Roadmap</a>
+</div>
+
+<div class="container">
+
+  <!-- ══ RESUMEN EJECUTIVO ══ -->
+  <section id="resumen">
+    <span class="meta-tag meta-priority">RESUMEN EJECUTIVO</span>
+    <h2>Lo que encontré</h2>
+    <p class="subtitle">El sistema tiene una base sólida y las mejoras recientes (sidebar, mapa, gráficos con filtros) lo pusieron varios escalones por encima del nivel típico de un ERP local. Pero todavía hay <strong>3 brechas grandes</strong> que limitan su utilidad real para gerenciar un laboratorio.</p>
+
+    <div class="quote">
+      "Un ERP que solo registra facturas es un cuaderno digital. Un ERP útil te dice qué hacer mañana."
+    </div>
+
+    <h3>Las 3 brechas más importantes</h3>
+
+    <div class="highlights">
+      <div class="highlight">
+        <div class="num">1</div>
+        <div class="label">BRECHA FINANCIERA</div>
+        <div class="desc"><strong>Falta el "Estado de Resultados".</strong> Hay facturas y pagos, pero no se ve si Esplendida está ganando o perdiendo plata por producto, por mes, por categoría.</div>
+      </div>
+      <div class="highlight">
+        <div class="num">2</div>
+        <div class="label">BRECHA DE PRODUCCIÓN</div>
+        <div class="desc"><strong>Falta la "receta" de cada producto.</strong> Sin BOM (Bill of Materials), no se puede saber cuánto cuesta producir cada bronceador ni cuándo se va a agotar el Uruku.</div>
+      </div>
+      <div class="highlight">
+        <div class="num">3</div>
+        <div class="label">BRECHA DE ANTICIPACIÓN</div>
+        <div class="desc"><strong>Todo es retrospectivo.</strong> El sistema muestra qué pasó, no qué va a pasar. Falta forecast de caja, predicción de quiebre de stock, proyección de IVA.</div>
+      </div>
+    </div>
+
+    <h3>Mi recomendación de orden</h3>
+    <ul>
+      <li><strong>Semana 1-2:</strong> Quick wins de diseño (alertas inteligentes, empty states, breadcrumbs en mobile)</li>
+      <li><strong>Semana 3-4:</strong> Aging chart + Estado de resultados básico (cierran la brecha financiera)</li>
+      <li><strong>Semana 5-7:</strong> BOM y producción (cierran la brecha de producción)</li>
+      <li><strong>Semana 8-10:</strong> Forecasting y alertas predictivas (cierran la brecha de anticipación)</li>
+    </ul>
+  </section>
+
+
+  <!-- ══ DISEÑO ══ -->
+  <section id="diseno">
+    <span class="meta-tag meta-design">DESDE EL ÁNGULO DEL DISEÑADOR</span>
+    <h2>🎨 Mejoras de diseño y experiencia</h2>
+    <p class="subtitle">Cómo ve un diseñador de producto a la aplicación, qué patrones rompen consistencia y qué fricciones tiene el usuario al hacer su trabajo del día a día.</p>
+
+    <!-- D1 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D1</span>
+        <h4 class="issue-title">Sobrecarga del dashboard — demasiada info compitiendo por atención</h4>
+        <span class="impact impact-high">Alto impacto</span>
+      </div>
+      <p class="description">El usuario que abre el sistema ve: saludo, resumen inteligente (4 líneas), 3 hero cards, 1 gráfico de barras, 1 dona, 1 grilla de acciones, 2 listas de top clientes/proveedores, lista de últimas facturas. <strong>Son 9 secciones en una pantalla.</strong> Demasiado scroll, decisiones difíciles de tomar a primera vista.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Refactorizar el dashboard en 3 zonas claras:<br>
+        <strong>① Cabecera (lo urgente):</strong> resumen inteligente + 1 sola card con la decisión del día.<br>
+        <strong>② Zona principal (lo importante):</strong> el gráfico de flujo con su filtro, sin distracciones.<br>
+        <strong>③ Pie (lo de referencia):</strong> top clientes/proveedores y últimas facturas, colapsable.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1 día</span>
+        <span><strong>Tipo:</strong> Reorganización</span>
+        <span><strong>Riesgo:</strong> Bajo</span>
+      </div>
+    </div>
+
+    <!-- D2 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D2</span>
+        <h4 class="issue-title">La dona "Resumen rápido" no comunica nada útil</h4>
+        <span class="impact impact-high">Alto impacto</span>
+      </div>
+      <p class="description">La dona mezcla "Por cobrar" + "Por pagar" + "IVA" como si fueran proporciones del mismo total. <strong>No hay un significado matemático en ese %.</strong> Es ruido visual.</p>
+      <div class="compare">
+        <div class="compare-side before">
+          <div class="label">Antes — Dona sin significado</div>
+          <div style="font-size:13px;color:#64748b;">"Tu negocio es 42% cobrar / 42% pagar / 16% IVA" — eso no significa nada</div>
+        </div>
+        <div class="compare-side after">
+          <div class="label">Después — Posición de caja proyectada</div>
+          <div style="font-size:13px;color:#064e3b;">Visualización tipo balanza: lo que entra vs lo que sale, con el neto proyectado destacado.</div>
+        </div>
+      </div>
+      <div class="mockup">
+<span class="green">A favor (van a entrar):</span>   ████████████ Gs. 81M  <span class="dim">← cobros pendientes</span>
+<span class="red">En contra (van a salir):</span>   ██████        Gs. 38M  <span class="dim">← pagos + IVA</span>
+                          ──────────────
+<span class="amber">Posición neta proyectada:</span>  ████████      Gs. +43M
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 0.5 día</span>
+        <span><strong>Tipo:</strong> Reemplazo de componente</span>
+      </div>
+    </div>
+
+    <!-- D3 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D3</span>
+        <h4 class="issue-title">Inconsistencia visual entre páginas</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Algunas páginas usan <code>p-8</code>, otras <code>p-6</code>; algunos botones azules, otros índigo; algunos cards con <code>rounded-2xl</code> y otros con <code>rounded-xl</code>. <strong>Un diseñador externo notaría inmediatamente que no hay sistema de diseño.</strong></p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Crear un <strong>archivo de design tokens</strong> en <code>frontend/src/lib/design-tokens.ts</code> con: spacings, radii, color palette, typography scale. Refactorizar todas las páginas para que tomen de ahí. Esto te da un único lugar para cambiar la marca si querés que sea más "Esplendida" (paleta rosa-dorada por ejemplo).
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 2-3 días</span>
+        <span><strong>Tipo:</strong> Refactor</span>
+        <span><strong>Beneficio:</strong> Cambios futuros 5× más rápidos</span>
+      </div>
+    </div>
+
+    <!-- D4 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D4</span>
+        <h4 class="issue-title">Empty states genéricos — pierden oportunidad de guiar</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Cuando una página no tiene datos, aparece "🤷 Sin items" o "Sin clientes registrados". <strong>Es una oportunidad perdida</strong> — debería ser una invitación clara a la siguiente acción.</p>
+      <div class="compare">
+        <div class="compare-side before">
+          <div class="label">Antes</div>
+          <div style="font-size:13px;">"🤷<br>Sin proveedores que coincidan"</div>
+        </div>
+        <div class="compare-side after">
+          <div class="label">Después</div>
+          <div style="font-size:13px;">"📦 No tenés proveedores cargados todavía.<br><br>Los proveedores son las empresas que te venden insumos como Uruku, frascos, tapas.<br><br><strong style='color:var(--indigo);'>+ Cargar mi primer proveedor</strong>"</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1 día (todas las páginas)</span>
+        <span><strong>Tipo:</strong> Diseño narrativo</span>
+      </div>
+    </div>
+
+    <!-- D5 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D5</span>
+        <h4 class="issue-title">Skeleton loaders en lugar de "Cargando…"</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Cuando una página carga, aparece texto plano "Cargando clientes...". <strong>Genera percepción de lentitud.</strong> El estándar moderno es mostrar un esqueleto gris de la estructura que va a aparecer.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Crear componente <code>&lt;Skeleton&gt;</code> con animación shimmer. Reemplazar todos los "Cargando..." por skeletons en clientes, proveedores, inventario, dashboard cards. <strong>Bonus:</strong> usuario percibe la app 30% más rápida sin cambios reales de performance.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1 día</span>
+        <span><strong>Tipo:</strong> Mejora de percepción</span>
+      </div>
+    </div>
+
+    <!-- D6 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D6</span>
+        <h4 class="issue-title">Mobile — el sidebar desaparece pero la pantalla queda poco aprovechada</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">En celular hay 4 botones en el bottom nav + un "+" central. Es funcional pero <strong>no hay forma de buscar globalmente</strong>, no hay acceso rápido al asistente IA, y los breadcrumbs no aparecen.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Agregar al header móvil: barra de búsqueda persistente (ícono lupa que expande), y reemplazar el botón "+" por un menú radial con las 5 acciones más usadas en lugar de las 3 actuales.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 2 días</span>
+        <span><strong>Tipo:</strong> Mobile-first</span>
+      </div>
+    </div>
+
+    <!-- D7 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D7</span>
+        <h4 class="issue-title">Falta dark mode</h4>
+        <span class="impact impact-low">Bajo impacto</span>
+      </div>
+      <p class="description">El sidebar es oscuro pero el resto de la app es siempre claro. <strong>La gente que trabaja muchas horas con ERP suele preferir dark mode.</strong></p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Implementar dark mode con toggle en el perfil de usuario. Si ya hay design tokens (D3), es 1 día. Si no, son 4 días.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1-4 días</span>
+        <span><strong>Tipo:</strong> Feature visual</span>
+      </div>
+    </div>
+
+    <!-- D8 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">D8</span>
+        <h4 class="issue-title">Microinteracciones faltantes — el sistema "no se siente" alive</h4>
+        <span class="impact impact-low">Bajo impacto</span>
+      </div>
+      <p class="description">Al guardar una factura, simplemente cierra el modal. <strong>Falta feedback emocional positivo</strong> que refuerce "lo hiciste bien". Las herramientas que se sienten gratas tienen toasters con animación, confetti en hitos, sparklines que crecen.</p>
+      <div class="solution">
+        <strong>Propuestas concretas:</strong>
+        <ul>
+          <li>Toast con animación slide-in al guardar (ya hay un sistema undo, mejorar el visual)</li>
+          <li>Animación de check verde al confirmar acciones críticas</li>
+          <li>Al cargar la 100ª factura del mes, un mini confetti</li>
+          <li>Cuando una factura se marca como "pagada", animación de la card</li>
+        </ul>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 2-3 días</span>
+        <span><strong>Tipo:</strong> Polish</span>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ══ FINANZAS ══ -->
+  <section id="finanzas">
+    <span class="meta-tag meta-finance">DESDE EL ÁNGULO DEL FINANCIERO</span>
+    <h2>💰 Mejoras de gestión financiera</h2>
+    <p class="subtitle">Qué le falta al sistema para realmente ayudar a Esplendida a tomar decisiones, controlar costos y anticiparse a problemas.</p>
+
+    <!-- F1 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F1</span>
+        <h4 class="issue-title">Falta el Estado de Resultados — ¿ganamos o perdemos?</h4>
+        <span class="impact impact-high">CRÍTICO</span>
+      </div>
+      <p class="description">El sistema muestra ingresos (facturado) y egresos (compras), pero <strong>no muestra el resultado real</strong>: utilidad bruta, margen, gastos administrativos, resultado del ejercicio. Sin esto, Esplendida no puede saber si los bronceadores son más rentables que las cremas.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Crear una pantalla <code>/reportes/resultados</code> con la estructura clásica:
+        <ul style="margin-top:8px;">
+          <li><strong>Ventas brutas</strong> — del período</li>
+          <li><strong>(−) Costo de mercadería vendida</strong> (CMV) — necesita BOM (ver F2)</li>
+          <li><strong>= Utilidad bruta</strong> y % margen</li>
+          <li><strong>(−) Gastos operativos</strong> — agrupados por plan de cuentas</li>
+          <li><strong>= Resultado operativo</strong></li>
+          <li><strong>(−) IVA neto pagado</strong></li>
+          <li><strong>= Resultado del período</strong></li>
+        </ul>
+        Con comparativa contra el período anterior y vs presupuesto si está cargado.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 5-7 días</span>
+        <span><strong>Tipo:</strong> Feature nuevo + backend</span>
+        <span><strong>Riesgo:</strong> Necesita BOM (F2) para ser preciso</span>
+      </div>
+    </div>
+
+    <!-- F2 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F2</span>
+        <h4 class="issue-title">Bill of Materials (BOM) — recetas de los productos</h4>
+        <span class="impact impact-high">CRÍTICO</span>
+      </div>
+      <p class="description">Esplendida fabrica cosméticos pero el sistema no sabe <strong>qué se necesita para fabricar cada producto</strong>. Por ejemplo: 1 unidad de "Bronceador 150ml con Uruku" consume X gramos de extracto + 1 frasco oval + 1 tapa atomizador + 1 etiqueta frente + 1 etiqueta dorso + Y de aceite base.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Agregar tabla <code>recetas_productos</code> que vincule cada producto terminado con sus insumos y cantidades. Beneficios:
+        <ul style="margin-top:8px;">
+          <li><strong>Costo real por unidad</strong> = suma de costos de los insumos</li>
+          <li><strong>Margen automático</strong> = (precio venta − costo BOM) / precio venta</li>
+          <li><strong>Producción planificada</strong>: "Si quiero fabricar 1.000 bronceadores, ¿tengo stock de todos los insumos?"</li>
+          <li><strong>Predicción de quiebre</strong>: "Vendiendo al ritmo actual, el Uruku se acaba en 18 días"</li>
+        </ul>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 7-10 días</span>
+        <span><strong>Tipo:</strong> Feature mayor + DB + UI</span>
+      </div>
+    </div>
+
+    <!-- F3 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F3</span>
+        <h4 class="issue-title">Aging report — ¿quién me está debiendo desde hace cuánto?</h4>
+        <span class="impact impact-high">Alto impacto</span>
+      </div>
+      <p class="description">El sistema muestra "saldo pendiente por cliente" pero <strong>no lo agrupa por antigüedad</strong>. Es la diferencia entre "CASA RICA me debe Gs. 18M" y "CASA RICA me debe Gs. 18M, de los cuales Gs. 15M están vencidos hace más de 60 días".</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Endpoint <code>/reportes/aging</code> ya existe en el backend pero está bloqueado por el layout. Activarlo y crear UI con buckets clásicos: 0-30, 31-60, 61-90, +90 días. Visualización tipo:
+      </div>
+      <div class="mockup">
+<span class="green">0-30 dias</span>    ██████████ Gs. 45M  <span class="dim">(al dia)</span>
+<span class="amber">31-60 dias</span>   ████       Gs. 18M  <span class="dim">(seguimiento)</span>
+<span class="red">61-90 dias</span>   ██         Gs.  9M  <span class="dim">(URGENTE)</span>
+<span class="red">+ 90 dias</span>    █          Gs.  3M  <span class="dim">(judicial)</span>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 2-3 días</span>
+        <span><strong>Tipo:</strong> Frontend (backend ya existe)</span>
+      </div>
+    </div>
+
+    <!-- F4 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F4</span>
+        <h4 class="issue-title">Valuación de inventario — ¿cuánto vale mi stock total?</h4>
+        <span class="impact impact-high">Alto impacto</span>
+      </div>
+      <p class="description">Ya implementamos "Total en stock: Gs. X.XXX.XXX" pero <strong>falta el detalle de cómo se valoriza</strong>: ¿costo unitario × cantidad? ¿LIFO, FIFO, promedio ponderado? Y falta el reporte de variación de inventario mes a mes.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Implementar <strong>costo promedio ponderado</strong> (CPP) — el estándar más sencillo y el que mejor funciona para cosméticos. Cada compra recalcula el costo unitario promedio. Agregar pantalla "Movimientos de inventario" que muestre:
+        <ul style="margin-top:8px;">
+          <li>Stock inicial del mes</li>
+          <li>(+) Entradas (compras + producción)</li>
+          <li>(−) Salidas (ventas + descarte)</li>
+          <li>= Stock final + valor</li>
+        </ul>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 4-5 días</span>
+        <span><strong>Tipo:</strong> Backend + UI</span>
+      </div>
+    </div>
+
+    <!-- F5 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F5</span>
+        <h4 class="issue-title">Forecast de caja — proyección a 30/60/90 días</h4>
+        <span class="impact impact-high">Alto impacto</span>
+      </div>
+      <p class="description">El sistema sabe qué facturas vencen cuándo (cobrar y pagar) pero <strong>no proyecta esa información en una línea de tiempo de caja</strong>. Una gerencia financiera necesita saber: "el día 15 voy a tener Gs. 50M, después de pagar la planilla el 28 voy a tener solo Gs. 12M, si no cobro a CASA RICA antes del 5 quedo en rojo".</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Pantalla <code>/finanzas/forecast</code> con gráfico de área que muestre el saldo de caja día por día durante los próximos 90 días, asumiendo cobros/pagos en sus fechas de vencimiento. Marcar días donde el saldo cae bajo cero como zona roja.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 4-5 días</span>
+        <span><strong>Tipo:</strong> Feature predictivo</span>
+      </div>
+    </div>
+
+    <!-- F6 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F6</span>
+        <h4 class="issue-title">Análisis de concentración de clientes (riesgo)</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Si el 70% de las ventas vienen de un solo cliente (ej: CASA RICA), <strong>Esplendida tiene un riesgo de concentración enorme</strong> y el sistema no lo señala.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Card en el dashboard "Análisis de concentración" que muestre:
+        <ul style="margin-top:8px;">
+          <li>% de ventas que vienen del Top 1 / Top 3 / Top 5 clientes</li>
+          <li>Alerta si Top 1 supera 30% del total</li>
+          <li>Coeficiente Herfindahl-Hirschman simplificado</li>
+        </ul>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1-2 días</span>
+        <span><strong>Tipo:</strong> Métrica nueva</span>
+      </div>
+    </div>
+
+    <!-- F7 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F7</span>
+        <h4 class="issue-title">Trazabilidad de lotes para cosméticos</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">La industria cosmética en Paraguay tiene regulaciones de DINAVISA/MSPyBS sobre trazabilidad. <strong>Cada producto fabricado debe tener un lote</strong> que permita rastrear: qué materias primas se usaron, en qué fecha, a qué clientes se vendió.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Agregar tablas:
+        <ul style="margin-top:8px;">
+          <li><code>lotes_produccion</code>: lote, fecha, producto, cantidad, fecha_vencimiento</li>
+          <li><code>lotes_movimientos</code>: lote, entrada/salida, factura asociada</li>
+        </ul>
+        Útil para retiros de mercado o reclamos de calidad. <strong>Diferenciador competitivo</strong> — pocos ERPs lo tienen bien resuelto.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 6-8 días</span>
+        <span><strong>Tipo:</strong> Feature regulatorio</span>
+      </div>
+    </div>
+
+    <!-- F8 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F8</span>
+        <h4 class="issue-title">Presupuesto anual y comparativa real vs presupuestado</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Existe un endpoint <code>/presupuestos</code> en el backend pero no está expuesto en la UI. <strong>Sin presupuesto, no hay forma de medir si Esplendida está "yendo bien o mal" más allá de comparar con el mes pasado.</strong></p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Pantalla "Presupuesto" donde se cargan los montos esperados por mes y por categoría (ventas, costos, gastos). En el dashboard, mostrar el avance: "Llevás 78% del objetivo de ventas del mes".
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 3-4 días</span>
+        <span><strong>Tipo:</strong> Frontend (backend existe)</span>
+      </div>
+    </div>
+
+    <!-- F9 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F9</span>
+        <h4 class="issue-title">Términos de pago — condiciones por cliente y proveedor</h4>
+        <span class="impact impact-medium">Medio impacto</span>
+      </div>
+      <p class="description">Algunos clientes pagan a 30 días, otros a 60, otros a contado. <strong>El sistema no lo registra a nivel de cliente</strong>, hay que recordar caso por caso.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> Campo <code>plazo_pago_dias</code> en clientes y proveedores. Al crear una factura, calcular automáticamente la fecha de vencimiento sumando el plazo a la fecha de emisión. <strong>Bonus:</strong> alertar si la fecha manual difiere mucho del plazo configurado.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 2 días</span>
+        <span><strong>Tipo:</strong> Mejora incremental</span>
+      </div>
+    </div>
+
+    <!-- F10 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F10</span>
+        <h4 class="issue-title">Estacionalidad — comparar mismos meses año a año</h4>
+        <span class="impact impact-low">Bajo impacto</span>
+      </div>
+      <p class="description">Los bronceadores tienen pico en verano (Nov-Mar) y las cremas son más estables. <strong>El sistema no tiene un análisis específico de estacionalidad</strong>. Hoy solo comparás "vs mes anterior" lo cual es engañoso si el negocio es estacional.</p>
+      <div class="solution">
+        <strong>Propuesta:</strong> En el dashboard, agregar comparativa "Ventas de este mes vs el mismo mes del año pasado y dos años atrás". Útil para detectar tendencias reales separadas del efecto estacional.
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 1 día</span>
+        <span><strong>Tipo:</strong> Insight adicional</span>
+      </div>
+    </div>
+
+    <!-- F11 -->
+    <div class="issue-card">
+      <div class="issue-header">
+        <span class="issue-num">F11</span>
+        <h4 class="issue-title">Alertas predictivas inteligentes</h4>
+        <span class="impact impact-low">Bajo impacto pero alto WOW</span>
+      </div>
+      <p class="description">El SmartSummary actual cuenta lo que pasó. <strong>Falta un sistema que avise antes de que pase algo malo.</strong></p>
+      <div class="solution">
+        <strong>Propuestas de alertas:</strong>
+        <ul style="margin-top:8px;">
+          <li>"Al ritmo actual de ventas, vas a quedarte sin Frascos Oval Dorado en 12 días"</li>
+          <li>"CASA RICA tiene un patrón de pago a 45-50 días. Esta factura está vencida hace 55 — considera llamar"</li>
+          <li>"El IVA de este mes va a ser ~Gs. 65M según tu ritmo de facturación"</li>
+          <li>"El costo del Uruku subió 22% en las últimas 3 compras — revisar precios de venta"</li>
+        </ul>
+      </div>
+      <div class="meta">
+        <span><strong>Esfuerzo:</strong> 5-6 días</span>
+        <span><strong>Tipo:</strong> Sistema de alertas + reglas</span>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ══ QUICK WINS ══ -->
+  <section id="quickwins">
+    <span class="meta-tag meta-priority">QUICK WINS</span>
+    <h2>⚡ Las 5 mejoras que haría YA</h2>
+    <p class="subtitle">Si tuviera 1 semana y nada más, estas son las que dan más valor por menos esfuerzo.</p>
+
+    <div class="roadmap">
+      <div class="roadmap-row">
+        <div class="week">Día 1</div>
+        <div class="task">
+          <strong>🪜 Aging chart en página de Cuentas</strong>
+          <span>El endpoint ya existe en el backend. Solo hay que crear la UI. <strong>Impacto: dejar de cobrar tarde.</strong></span>
+        </div>
+        <span class="effort effort-S">S · 1 día</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">Día 2</div>
+        <div class="task">
+          <strong>🎯 Reemplazar dona del dashboard por balanza de caja</strong>
+          <span>Quitar el visual confuso. Mostrar "lo que entra vs lo que sale" en barras horizontales. <strong>Impacto: gerencia entiende su posición en 3 segundos.</strong></span>
+        </div>
+        <span class="effort effort-S">S · 0.5 día</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">Día 3</div>
+        <div class="task">
+          <strong>📊 Concentración de clientes en el dashboard</strong>
+          <span>Card simple: "Tu Top 3 clientes representa el X% de tus ventas." <strong>Impacto: visibilidad del riesgo concentración.</strong></span>
+        </div>
+        <span class="effort effort-S">S · 1 día</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">Día 4</div>
+        <div class="task">
+          <strong>⏱️ Comparativa estacional (vs año anterior)</strong>
+          <span>En el gráfico de Ingresos y egresos, agregar línea de "Mismo mes año pasado". <strong>Impacto: detectar tendencias reales en negocio estacional.</strong></span>
+        </div>
+        <span class="effort effort-S">S · 1 día</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">Día 5</div>
+        <div class="task">
+          <strong>📦 Donut de stock por categoría en Inventario</strong>
+          <span>Ya tenemos las categorías auto-detectadas. Agregar un donut arriba con valor invertido por categoría. <strong>Impacto: saber dónde está parado el capital.</strong></span>
+        </div>
+        <span class="effort effort-S">S · 1 día</span>
+      </div>
+    </div>
+
+    <p style="margin-top:20px;">Total: <strong>~4.5 días</strong> y los KPIs de la app saltan a otro nivel.</p>
+  </section>
+
+
+  <!-- ══ ROADMAP ══ -->
+  <section id="roadmap">
+    <span class="meta-tag meta-priority">ROADMAP COMPLETO</span>
+    <h2>📅 Plan de 10 semanas</h2>
+    <p class="subtitle">Si querés implementar todo el análisis. Cada fase deja el sistema funcional y permite parar entre fases.</p>
+
+    <div class="roadmap">
+      <h3 style="margin-top:0;">FASE A — Quick wins (1 semana)</h3>
+      <div class="roadmap-row">
+        <div class="week">S1</div>
+        <div class="task">
+          <strong>Aging + Balanza caja + Concentración + Estacionalidad + Stock por categoría</strong>
+          <span>Los 5 quick wins detallados arriba. Mucho impacto, poco código.</span>
+        </div>
+        <span class="effort effort-S">~5 días</span>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <h3 style="margin-top:0;">FASE B — Cierre brecha financiera (2 semanas)</h3>
+      <div class="roadmap-row">
+        <div class="week">S2</div>
+        <div class="task">
+          <strong>Estado de Resultados básico (P&L)</strong>
+          <span>Sin BOM aún, usando costo unitario del inventario. Ventas − CMV − Gastos = Resultado.</span>
+        </div>
+        <span class="effort effort-M">~5 días</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">S3</div>
+        <div class="task">
+          <strong>Presupuesto + comparativa real vs presupuestado</strong>
+          <span>Activar endpoint existente, agregar UI.</span>
+        </div>
+        <span class="effort effort-M">~3 días</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">S3</div>
+        <div class="task">
+          <strong>Términos de pago por cliente y proveedor</strong>
+          <span>Campo simple, gran utilidad.</span>
+        </div>
+        <span class="effort effort-S">~2 días</span>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <h3 style="margin-top:0;">FASE C — Sistema de diseño + UX polish (1 semana)</h3>
+      <div class="roadmap-row">
+        <div class="week">S4</div>
+        <div class="task">
+          <strong>Design tokens + Skeleton loaders + Empty states</strong>
+          <span>Trabajar la consistencia. Mejorar percepción de calidad.</span>
+        </div>
+        <span class="effort effort-M">~5 días</span>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <h3 style="margin-top:0;">FASE D — Cierre brecha de producción (3 semanas)</h3>
+      <div class="roadmap-row">
+        <div class="week">S5-6</div>
+        <div class="task">
+          <strong>Bill of Materials (BOM) — recetas de productos</strong>
+          <span>Modelar materiales, vincular a productos terminados, calcular costo real.</span>
+        </div>
+        <span class="effort effort-L">~10 días</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">S7</div>
+        <div class="task">
+          <strong>Valuación de inventario con CPP + Movimientos</strong>
+          <span>Costo promedio ponderado, reporte de variación de inventario.</span>
+        </div>
+        <span class="effort effort-M">~5 días</span>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <h3 style="margin-top:0;">FASE E — Cierre brecha de anticipación (3 semanas)</h3>
+      <div class="roadmap-row">
+        <div class="week">S8</div>
+        <div class="task">
+          <strong>Forecast de caja 90 días</strong>
+          <span>Línea de tiempo de saldo proyectado basado en fechas de vencimiento.</span>
+        </div>
+        <span class="effort effort-M">~5 días</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">S9</div>
+        <div class="task">
+          <strong>Trazabilidad de lotes</strong>
+          <span>Tabla de lotes, vinculación con facturas, vencimientos.</span>
+        </div>
+        <span class="effort effort-L">~7 días</span>
+      </div>
+      <div class="roadmap-row">
+        <div class="week">S10</div>
+        <div class="task">
+          <strong>Sistema de alertas predictivas</strong>
+          <span>Reglas inteligentes que anticipan problemas.</span>
+        </div>
+        <span class="effort effort-M">~5 días</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px;">📊 Esfuerzo total estimado</h3>
+    <ul>
+      <li><strong>Fase A (quick wins):</strong> 5 días — <em>haría YA</em></li>
+      <li><strong>Fase B (finanzas básicas):</strong> 10 días</li>
+      <li><strong>Fase C (diseño):</strong> 5 días</li>
+      <li><strong>Fase D (producción):</strong> 15 días</li>
+      <li><strong>Fase E (anticipación):</strong> 17 días</li>
+      <li><strong>Total: ~52 días</strong> (10-11 semanas con 1 dev a tiempo completo)</li>
+    </ul>
+
+    <div class="quote">
+      Mi recomendación honesta: empezá por la Fase A (5 días). Cuando lo veas funcionando, el negocio te va a pedir B sola. Si paralelizamos diseño (C) con finanzas básicas (B), llegás al mes 2 con un sistema de otra categoría.
+    </div>
+
+  </section>
+
+  <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:12px;">
+    Análisis hecho por Claude · Mayo 2026<br>
+    24 oportunidades de mejora · 8 de diseño · 11 de finanzas · 5 quick wins
+  </div>
+
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tabs a');
+  const sections = document.querySelectorAll('section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tabs.forEach(t => t.classList.remove('active'));
+        const active = document.querySelector(`.tabs a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.2 });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
