@@ -1,7 +1,7 @@
 # ERP_Web v5.0 — backend cloud (FastAPI + Supabase Postgres + Storage)
 
 # Web framework
-fastapi==0.115.0
+fastapi==0.136.3
 uvicorn[standard]==0.30.6
 python-multipart==0.0.29
 httpx==0.28.1
