@@ -12,7 +12,7 @@ asyncpg==0.31.0
 
 # Validation / settings (pydantic >=2.11.7 requerido por supabase->realtime)
 pydantic==2.11.10
-pydantic-settings==2.7.0
+pydantic-settings==2.14.1
 pydantic[email]==2.11.10
 email-validator==2.3.0
 
